@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <!-- 콘솔 및 파일 애펜더 설정 -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <!-- Spring Data JDBC SQL 쿼리 로그 설정-->
+               <Logger name="org.springframework.jdbc.core.JdbcTemplate" level="debug"/>
+               <Logger name="org.springframework.jdbc.core.StatementCreatorUtils" level="trace"/>
+
+               <!-- Hibernate SQL 쿼리 로그 설정 -->
+        <Logger name="org.hibernate.SQL" level="debug"/>
+        <!-- Hibernate 파라미터 값 로그 설정 -->
+        <Logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="trace"/>
+
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+        </Root>s
+    </Loggers>
+</Configuration>

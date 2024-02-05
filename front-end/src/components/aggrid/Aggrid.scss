@@ -1,0 +1,38 @@
+$brown: #956666;
+$activeRow: #479d964a;
+
+.ag-header-viewport {
+    background-color: #f4f4f4;
+}
+
+.ag-header.ag-header-allow-overflow .ag-header-row {
+    font-family: 'Play', sans-serif;
+    font-weight: bold;
+    font-size: 17px;
+    color: #000;
+}
+.ag-header-cell-resize::after{
+    background-color: $brown
+}
+
+.ag-header-row.ag-header-row-column-filter {
+    border-top: 1px solid $brown;   
+}
+
+.ag-ltr .ag-cell {
+    border-right: 1px solid $brown;
+}
+
+
+//ag-check box 가운데 정렬
+.ag-checkbox-cell {
+    justify-content: center;
+}
+
+.ag-row-selected::before {
+    background-color: $activeRow;
+}
+
+.ag-row-hover {
+    background-color: $activeRow;
+}

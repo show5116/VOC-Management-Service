@@ -1,0 +1,49 @@
+
+@font-face {
+    font-family: 'Play';
+    font-weight: normal;
+    src:
+      url('./assets/fonts/Play-Regular.ttf') format('woff2'),
+      url('./assets/fonts/Play-Regular.ttf') format('woff'),
+      url('./assets/fonts/Play-Regular.ttf') format('truetype');
+    font-display: swap;
+}
+
+@font-face {
+  font-family: 'Play';
+  font-weight: bold;
+  src:
+    url('./assets/fonts/Play-Bold.ttf') format('woff2'),
+    url('./assets/fonts/Play-Bold.ttf') format('woff'),
+    url('./assets/fonts/Play-Bold.ttf') format('truetype');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Orbit';
+  font-weight: normal;
+  src:
+    url('./assets/fonts/Orbit-Regular.ttf') format('woff2'),
+    url('./assets/fonts/Orbit-Regular.ttf') format('woff'),
+    url('./assets/fonts/Orbit-Regular.ttf') format('truetype');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Crap';
+  font-style: normal;
+  font-weight: normal;
+  src:
+    url('./assets/fonts/YeongdeokCrab.ttf') format('woff2'),
+    url('./assets/fonts/YeongdeokCrab.ttf') format('woff'),
+    url('./assets/fonts/YeongdeokCrab.ttf') format('truetype');
+  font-display: swap;
+}
+
+#root {
+  font-family: 'Play', 'Orbit','Crap' sans-serif;
+}
+
+@import url('ag-grid-community/styles/ag-grid.css');// Core CSS
+@import url('ag-grid-community/styles/ag-theme-quartz.css');// // Theme CSS
+@import url('components/aggrid/Aggrid.scss');

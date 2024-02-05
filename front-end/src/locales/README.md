@@ -1,0 +1,1 @@
+langsType.ts file에 type 명시을 명시 후 ko, en, cn file에 입력 하면 됩니다. 

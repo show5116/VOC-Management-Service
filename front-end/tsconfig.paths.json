@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["src/*"],
+            "@components/*": ["src/components/*"],
+            "@layout": ["src/layout/Layout"],
+            "@locales": ["src/locales/index"],
+            "@models/*": ["src/models/*"],
+            "@pages/*": ["src/pages/*"],
+            "@constants/*": ["src/constants/*"],
+            "@atoms/*": ["src/atoms/*"],
+            "@hooks/*": ["src/hooks/*"],
+            "@reducers/*": ["src/reducers/*"]
+        }
+    }
+}
