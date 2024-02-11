@@ -38,3 +38,4 @@ out/
 
 # Project exclude paths
 /front-end/.pnp.cjs
+/front-end/.yarn/

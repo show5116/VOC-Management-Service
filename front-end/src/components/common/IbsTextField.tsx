@@ -12,7 +12,10 @@ import {
 } from 'react'
 import HelperText from '../share/HelperText'
 import { IbsBaseProps } from '../share/model'
-import { defaultFormControllStyle, helperTextStyle } from '../styles/shareStyle'
+import {
+  defaultFormControllStyle,
+  helperTextStyle,
+} from '@components/styles/shareStyle'
 
 type ToCaseType = 'upper' | 'lowwer'
 

@@ -1,5 +1,6 @@
 import { memo } from 'react'
-import { Colors, colors } from '../styles/colors'
+
+import { Colors, colors } from '@/components/styles/colors'
 
 export type TRequestKind = 'new' | 'error' | 'improvement'
 
@@ -36,10 +37,10 @@ const RequestKindRenderer = (props: IProps) => {
         fontWeight: 500,
         width: 90,
         textAlign: 'center',
-        backgroundColor: requestKind[props.value].backgroundColor,
+        backgroundColor: requestKind[props.value]?.backgroundColor,
       }}
     >
-      {requestKind[props.value].value}
+      {requestKind[props.value]?.value}
     </div>
   )
 }

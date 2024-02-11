@@ -21,11 +21,13 @@ import HelperText from '../share/HelperText'
 import { IbsBaseProps } from '../share/model'
 import { defaultFormControllStyle, helperTextStyle } from '../styles/shareStyle'
 import { FaCheck, FaChevronDown, FaChevronUp } from 'react-icons/fa6'
+import { Colors, colors } from '@components/styles/colors'
 
 export interface Item {
   displayValue: string
   value: string
   description?: string
+  color?: (typeof colors)[Colors]
 }
 
 interface IbsComboboxProps extends SelectProps, IbsBaseProps {
@@ -147,6 +149,16 @@ const IbsCombobox = forwardRef<IbsComboboxHandle, IbsComboboxProps>(
           {blank && <MenuItem value={'null'}>{<>&nbsp;</>}</MenuItem>}
           {items?.map((item) => (
             <MenuItem key={item.value} value={item.value}>
+              {item.color && (
+                <div
+                  style={{
+                    marginRight: '10px',
+                    width: '10px',
+                    height: '10px',
+                    backgroundColor: `${item.color}`,
+                  }}
+                />
+              )}
               {checkbox && (
                 <Checkbox checked={values.indexOf(item.value) > -1} />
               )}

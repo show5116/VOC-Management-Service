@@ -53,15 +53,15 @@ public class QmsVocStatus {
   @Column(name = "CLOSED_DATE")
   public String closedDate;
   @Column(name = "CLOSED_USER")
-  public String closedUser; //
+  public String closedUser;
   @Column(name = "PERSON_IN_CHARGE")
-  public String personInCharge; // 담당자
+  public String personInCharge;
   @Column(name = "REQUIREMENT")
-  public String requirement; // 중요도
+  public String requirement;
   @Column(name = "DEVICE")
-  public String device; // ?
+  public String device;
   @Column(name = "UPDATE_DATE")
-  public String updateDate; //
+  public String updateDate;
   @Column(name = "UPDATE_USER")
-  public String updateUser; //
+  public String updateUser;
 }
