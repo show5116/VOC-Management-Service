@@ -16,7 +16,7 @@ public class JpaConfig {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource);
-        em.setPackagesToScan(new String[] { "com.qms.server" });
+        em.setPackagesToScan(new String[] { "com.vms.server" });
 
 
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
@@ -29,7 +29,8 @@ public class JpaConfig {
     private Properties additionalProperties() {
         Properties properties = new Properties();
         properties.setProperty("hibernate.hbm2ddl.auto", "none");
-        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.Oracle10gDialect");
+        //properties.setProperty("hibernate.dialect", "org.hibernate.dialect.Oracle10gDialect");
+        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
         properties.setProperty("hibernate.show_sql", "true");
         properties.setProperty("hibernate.format_sql", "true");
         properties.setProperty("hibernate.use_sql_comments", "true");

@@ -124,7 +124,7 @@ public class CommonServiceImpl implements CommonService {
     @Override
     public String getUserMail(String userId) {
         String result = "";
-        AdmEmployee admEmployee = admEmployeeRepository.findByUserId(userId);
+        AdmEmployee admEmployee = admEmployeeRepository.findById(userId).get();
         if(admEmployee != null){
             result = admEmployee.getEmpName()+"<"+admEmployee.getEmail()+">";
         }

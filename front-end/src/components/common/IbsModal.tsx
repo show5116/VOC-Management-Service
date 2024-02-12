@@ -67,7 +67,7 @@ const ModalContent = styled('div')(
     display: flex;
     flex-direction: column;
     gap: 8px;
-    overflow: hidden;
+    overflow: auto;
     background-color: ${colors.white};
     border-radius: 8px;
     border: 1px solid ${colors.grey};

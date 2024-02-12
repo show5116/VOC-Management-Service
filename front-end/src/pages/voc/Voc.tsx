@@ -1,17 +1,23 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 
 import Aggrid from '@components/aggrid/Aggrid'
 import { ColDef } from 'ag-grid-community'
+
+import RequestKindRenderer, {
+  requestKindArray,
+} from '@components/voc/RequestKindRenderer'
+import LobRenderer from '@components/aggrid/LobRenderer'
 
 import IbsTextField from '@components/common/IbsTextField'
 import IbsTypeButton from '@components/common/IbsTypeButton'
 import IbsButton from '@components/common/IbsButton'
 import IbsModal from '@components/common/IbsModal'
 
-import RequestKindRenderer, {
-  requestKindArray,
-} from '@components/voc/RequestKindRenderer'
-import VocRegistration from '@components/voc/VocRegistration'
+import VocRegistration, {
+  VocRegistrationHandle,
+} from '@components/voc/VocRegistration'
+
+import ibsAxios from '@/utils/ibsAxios'
 
 const rowData: any[] = [
   {
@@ -19,10 +25,11 @@ const rowData: any[] = [
     service: 'SILICONMITUS',
     menu: 'Lot Status',
     vocNumber: 'V0000001',
-    content: 'Lot Status 신규 페이지 요청',
+    content: '<u>Lot Status 신규 페이지 요청</u>',
     requestUser: '김철수',
     requestDate: new Date('2024-02-06'),
     deliveryRequestDate: new Date('2024-04-01'),
+    importance: 'second',
     attachment: 'aa.png',
     manager: '육이슬',
     progress: '',
@@ -38,6 +45,7 @@ const rowData: any[] = [
     requestUser: '김민수',
     requestDate: new Date('2024-02-06'),
     deliveryRequestDate: new Date('2024-02-12'),
+    importance: 'first',
     attachment: 'bb.exl',
     manager: '유영진',
     progress: '',
@@ -91,6 +99,7 @@ const columns: ColDef[] = [
   {
     headerName: '내용',
     field: 'content',
+    cellRenderer: LobRenderer,
   },
   {
     headerName: '요청자',
@@ -111,7 +120,7 @@ const columns: ColDef[] = [
   },
   {
     headerName: '중요도',
-    field: 'requestDate',
+    field: 'importance',
   },
   {
     headerName: '첨부파일',
@@ -152,23 +161,36 @@ const columns: ColDef[] = [
 ]
 
 const Voc = () => {
+  const refs = {
+    vocRegistration: useRef<VocRegistrationHandle>(null),
+  }
+
   const [isOpenRegistration, setIsRegistration] = useState(false)
+
+  const onClickRegistButton = () => {
+    refs.vocRegistration.current!.getData()
+    ibsAxios.post()
+  }
 
   return (
     <div style={{ height: '100%' }}>
       <IbsModal
         open={isOpenRegistration}
         setOpen={setIsRegistration}
-        width='1000px'
-        height='500px'
+        width='800px'
+        height='800px'
         title='VoC 등록'
         button={
-          <IbsButton formControllStyle={{ marginRight: 10 }} width={70}>
+          <IbsButton
+            formControllStyle={{ marginRight: 10 }}
+            width={70}
+            onClick={onClickRegistButton}
+          >
             등록
           </IbsButton>
         }
       >
-        <VocRegistration />
+        <VocRegistration ref={refs.vocRegistration} />
       </IbsModal>
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <IbsTextField label='검색어' />
