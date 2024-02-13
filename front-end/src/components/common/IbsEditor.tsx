@@ -1,4 +1,4 @@
-import { forwardRef, memo, useImperativeHandle, useState } from 'react'
+import { useState, useEffect, memo, Dispatch, SetStateAction } from 'react'
 
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
@@ -36,42 +36,31 @@ const formats = [
   'background',
 ]
 
-interface IbsEditorProps {
+interface IProps {
   title?: string
   width: string
   height: string
+  content?: string
+  setContent?: Dispatch<SetStateAction<string>>
 }
 
-export type IbsEditorHandle = {
-  getContent: () => string
+const IbsEditor = (props: IProps) => {
+  return (
+    <>
+      {props.title && <h3>{props.title}</h3>}
+      <ReactQuill
+        style={{
+          width: `${props.width}`,
+          height: `${props.height}`,
+        }}
+        theme='snow'
+        modules={modules}
+        formats={formats}
+        value={props.content || ''}
+        onChange={props.setContent}
+      />
+    </>
+  )
 }
-
-const IbsEditor = forwardRef<IbsEditorHandle, IbsEditorProps>(
-  (editorProps, ref) => {
-    useImperativeHandle(ref, () => ({
-      getContent,
-    }))
-    const [content, setContent] = useState('')
-
-    const getContent = () => content
-
-    return (
-      <>
-        {editorProps.title && <h3>{editorProps.title}</h3>}
-        <ReactQuill
-          style={{
-            width: `${editorProps.width}`,
-            height: `${editorProps.height}`,
-          }}
-          theme='snow'
-          modules={modules}
-          formats={formats}
-          value={content || ''}
-          onChange={setContent}
-        />
-      </>
-    )
-  },
-)
 
 export default memo(IbsEditor)

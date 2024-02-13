@@ -23,6 +23,7 @@
     "@types/react-dom": "^18.0.0",
     "@types/react-redux": "^7.1.33",
     "@types/react-router-dom": "^5.3.3",
+    "@types/styled-components": "^5.1.34",
     "ag-grid-community": "^31.0.1",
     "ag-grid-enterprise": "^31.0.1",
     "ag-grid-react": "^31.0.1",
@@ -48,6 +49,7 @@
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
     "sass": "^1.69.5",
+    "styled-components": "^6.1.8",
     "typescript": "^4.4.2",
     "web-vitals": "^2.1.0"
   },

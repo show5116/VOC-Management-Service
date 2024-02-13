@@ -30,6 +30,7 @@ export const rootColor = css`
     --dark-grey: #505050;
     --grey: #f0efef;
     --light-grey: #e6e6e6;
+    --orange: #ffa500;
     --main-background: #fff;
     --menu-hover: #efefef;
   }
@@ -57,6 +58,7 @@ export const colors = {
   darkGrey: 'var(--dark-grey)',
   grey: 'var(--grey)',
   lightGrey: 'var(--light-grey)',
+  orange: 'var(--orange)',
   mainBackground: 'var(--main-background)',
   menuHover: `var(--menu-hover)`,
 }

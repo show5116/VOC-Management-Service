@@ -35,10 +35,14 @@ const Aggrid = forwardRef<AggridHandle, AggridProps>((agGridProps, ref) => {
     ...props
   } = agGridProps
 
-  const [rowData, setRowData] = useState<any>(defaultRowData)
+  const [rowData, setRowData] = useState<any>()
   const [columnDefs, setColumnDefs] = useState<
     ColDef<any, any>[] | ColGroupDef<any>[]
   >(columns)
+
+  /*useEffect(() => {
+    setRowData(defaultRowData)
+  }, [defaultRowData]) */
 
   return (
     <div style={{ height: gridHeight, width: gridWidth, margin: '10px 0px' }}>
@@ -49,7 +53,7 @@ const Aggrid = forwardRef<AggridHandle, AggridProps>((agGridProps, ref) => {
         <AgGridReact<any>
           {...props}
           ref={gridRef}
-          rowData={rowData}
+          rowData={defaultRowData}
           columnDefs={columnDefs}
           rowSelection={rowSelection}
         />

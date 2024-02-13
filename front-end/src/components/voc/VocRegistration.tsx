@@ -1,4 +1,11 @@
-import { forwardRef, useEffect, useRef, useImperativeHandle } from 'react'
+import {
+  useState,
+  useEffect,
+  useRef,
+  memo,
+  forwardRef,
+  useImperativeHandle,
+} from 'react'
 
 import IbsCombobox, { IbsComboboxHandle } from '@components/common/IbsCombobox'
 import IbsTextField, {
@@ -10,7 +17,7 @@ import IbsDatePicker, {
 
 import ibsAxios from '@/utils/ibsAxios'
 import { colors } from '@components/styles/colors'
-import IbsEditor, { IbsEditorHandle } from '@components/common/IbsEditor'
+import IbsEditor from '@components/common/IbsEditor'
 import IbsAttachment, {
   IbsAttachmentHandle,
 } from '@components/common/IbsAttachment'
@@ -27,6 +34,8 @@ const VocRegistration = forwardRef<VocRegistrationHandle, VocRegistrationProps>(
       getData,
     }))
 
+    const [content, setContent] = useState('')
+
     const refs = {
       requestKindCombo: useRef<IbsComboboxHandle>(null),
       importanceCombo: useRef<IbsComboboxHandle>(null),
@@ -35,7 +44,6 @@ const VocRegistration = forwardRef<VocRegistrationHandle, VocRegistrationProps>(
       menuText: useRef<IbsTextFieldHandle>(null),
       deliveryRequestDate: useRef<IbsDatePickerHandel>(null),
       attachment: useRef<IbsAttachmentHandle>(null),
-      editor: useRef<IbsEditorHandle>(null),
     }
 
     useEffect(() => {
@@ -53,7 +61,7 @@ const VocRegistration = forwardRef<VocRegistrationHandle, VocRegistrationProps>(
       deliveryRequestDate:
         refs.deliveryRequestDate.current!.getDate().startDate,
       attachment: refs.attachment.current!.getFile(),
-      content: refs.editor.current!.getContent(),
+      content: content,
     })
 
     return (
@@ -116,10 +124,15 @@ const VocRegistration = forwardRef<VocRegistrationHandle, VocRegistrationProps>(
         <IbsAttachment ref={refs.attachment} />
         <br />
         <br />
-        <IbsEditor ref={refs.editor} width='800px' height='500px' />
+        <IbsEditor
+          width='800px'
+          height='270px'
+          content={content}
+          setContent={setContent}
+        />
       </>
     )
   },
 )
 
-export default VocRegistration
+export default memo(VocRegistration)

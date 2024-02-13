@@ -1,25 +1,40 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useCallback, useMemo } from 'react'
 
 import Aggrid from '@components/aggrid/Aggrid'
-import { ColDef } from 'ag-grid-community'
+import {
+  ColDef,
+  CellDoubleClickedEvent,
+  RowHeightParams,
+} from 'ag-grid-community'
 
 import RequestKindRenderer, {
   requestKindArray,
 } from '@components/voc/RequestKindRenderer'
+import ImportanceRenderer, {
+  importanceArray,
+} from '@components/voc/ImportanceRenderer'
+import RequestProgressRenderer, {
+  requestProgressArray,
+} from '@components/voc/ReqestProgressRenderer'
 import LobRenderer from '@components/aggrid/LobRenderer'
 
 import IbsTextField from '@components/common/IbsTextField'
 import IbsTypeButton from '@components/common/IbsTypeButton'
 import IbsButton from '@components/common/IbsButton'
 import IbsModal from '@components/common/IbsModal'
+import IbsEditor from '@components/common/IbsEditor'
 
 import VocRegistration, {
   VocRegistrationHandle,
 } from '@components/voc/VocRegistration'
 
+import { FaMinus, FaPlus } from 'react-icons/fa'
 import ibsAxios from '@/utils/ibsAxios'
+import { colors } from '@components/styles/colors'
 
-const rowData: any[] = [
+import * as S from './Voc.style'
+
+const testRowData: any[] = [
   {
     requestKind: undefined,
     service: 'SILICONMITUS',
@@ -33,8 +48,9 @@ const rowData: any[] = [
     attachment: 'aa.png',
     manager: '육이슬',
     progress: '',
-    expectedCompletionDate: '',
-    completionDate: '',
+    expectedCompletionDate: undefined,
+    completionDate: undefined,
+    rowHeight: 40,
   },
   {
     requestKind: 'error',
@@ -49,10 +65,11 @@ const rowData: any[] = [
     attachment: 'bb.exl',
     manager: '유영진',
     progress: '',
-    expectedCompletionDate: '',
-    completionDate: '',
+    expectedCompletionDate: undefined,
+    completionDate: undefined,
     updateUser: '',
     updateDate: '',
+    rowHeight: 80,
   },
 ]
 
@@ -67,118 +84,231 @@ const dateValueFormatter = (params: any) => {
   }`
 }
 
-const columns: ColDef[] = [
-  {
-    headerName: '요청 종류',
-    field: 'requestKind',
-    filter: 'agTextColumnFilter',
-    cellRenderer: RequestKindRenderer,
-    cellEditor: 'agRichSelectCellEditor',
-    editable: true,
-    cellEditorParams: {
-      values: requestKindArray,
-      cellRenderer: RequestKindRenderer,
-      cellEditorPopup: true,
-    },
-    floatingFilter: true,
-  },
-  {
-    headerName: 'Service',
-    field: 'service',
-    filter: 'agTextColumnFilter',
-    floatingFilter: true,
-  },
-  {
-    headerName: '메뉴',
-    field: 'menu',
-  },
-  {
-    headerName: '처리 번호',
-    field: 'vocNumber',
-  },
-  {
-    headerName: '내용',
-    field: 'content',
-    cellRenderer: LobRenderer,
-  },
-  {
-    headerName: '요청자',
-    field: 'requestUser',
-  },
-  {
-    headerName: '요청일',
-    field: 'requestDate',
-    cellEditor: 'agDateCellEditor',
-    editable: true,
-    valueFormatter: dateValueFormatter,
-  },
-  {
-    headerName: '납기 요청일',
-    field: 'deliveryRequestDate',
-    cellEditor: 'agDateCellEditor',
-    valueFormatter: dateValueFormatter,
-  },
-  {
-    headerName: '중요도',
-    field: 'importance',
-  },
-  {
-    headerName: '첨부파일',
-    field: 'attachment',
-  },
-  {
-    headerName: '담당자',
-    field: 'manager',
-  },
-  {
-    headerName: '진행 상황',
-    field: 'progress',
-    filter: true,
-    floatingFilter: true,
-  },
-  {
-    headerName: '완료 예정일',
-    field: 'expectedCompletionDate',
-    cellEditor: 'agDateCellEditor',
-    valueFormatter: dateValueFormatter,
-  },
-  {
-    headerName: '완료일',
-    field: 'completionDate',
-    cellEditor: 'agDateCellEditor',
-    valueFormatter: dateValueFormatter,
-  },
-  {
-    headerName: '수정자',
-    field: 'updateUser',
-  },
-  {
-    headerName: '수정일',
-    field: 'updateDate',
-    cellEditor: 'agDateCellEditor',
-    valueFormatter: dateValueFormatter,
-  },
-]
-
 const Voc = () => {
   const refs = {
     vocRegistration: useRef<VocRegistrationHandle>(null),
   }
 
+  const [rowData, setRowData] = useState<any[]>(testRowData)
   const [isOpenRegistration, setIsRegistration] = useState(false)
+  const [isOpenContent, setIsOpenContent] = useState(false)
+  const [content, setContent] = useState('')
+  const [rowIndex, setRowIndex] = useState(0)
+
+  const LineHeightCellRenderer = (props: any) => {
+    const onClickMinus = () => {
+      if (props.data.rowHeight === 40) {
+        return
+      }
+      rowData[props.rowIndex].rowHeight = rowData[props.rowIndex].rowHeight - 40
+      props.node.setRowHeight(rowData[props.rowIndex].rowHeight)
+      setRowData([...rowData])
+    }
+
+    const onClickPlus = () => {
+      rowData[props.rowIndex].rowHeight = rowData[props.rowIndex].rowHeight + 40
+      props.node.setRowHeight(rowData[props.rowIndex].rowHeight)
+      setRowData([...rowData])
+    }
+
+    return (
+      <div
+        style={{
+          display: 'flex',
+          height: '100%',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+        }}
+      >
+        {props.data.rowHeight !== 40 && (
+          <span style={{ height: '24px' }}>
+            <FaMinus
+              size='small'
+              cursor='pointer'
+              color={colors.darkGrey}
+              onClick={onClickMinus}
+            />
+          </span>
+        )}
+        <span style={{ height: '24px' }}>
+          <FaPlus
+            size='small'
+            cursor='pointer'
+            color={colors.darkGrey}
+            onClick={onClickPlus}
+          />
+        </span>
+      </div>
+    )
+  }
 
   const onClickRegistButton = () => {
     refs.vocRegistration.current!.getData()
-    ibsAxios.post()
+    //ibsAxios.post()
   }
 
+  const onClickContentSaveButton = () => {
+    rowData[rowIndex].content = content
+    setRowData([...rowData])
+    setIsOpenContent(false)
+  }
+
+  const onCellDoubleClickedContent = (
+    event: CellDoubleClickedEvent<any, any>,
+  ) => {
+    setContent(event.value)
+    event.rowIndex !== null && setRowIndex(event.rowIndex)
+    setIsOpenContent(true)
+  }
+
+  const getRowId = (params: any) => {
+    return params.data.vocNumber
+  }
+
+  const getRowHeight = useCallback((params: RowHeightParams<any, any>) => {
+    return params.data.rowHeight
+  }, [])
+
+  const columns: ColDef[] = [
+    {
+      checkboxSelection: true,
+      width: 40,
+    },
+    {
+      cellRenderer: LineHeightCellRenderer,
+      width: 40,
+    },
+    {
+      headerName: '요청 종류',
+      field: 'requestKind',
+      width: 120,
+      filter: 'agTextColumnFilter',
+      cellRenderer: RequestKindRenderer,
+      cellEditor: 'agRichSelectCellEditor',
+      editable: true,
+      cellEditorParams: {
+        values: requestKindArray,
+        cellRenderer: RequestKindRenderer,
+        cellEditorPopup: true,
+      },
+      floatingFilter: true,
+    },
+    {
+      headerName: 'Service',
+      field: 'service',
+      width: 124,
+      filter: 'agTextColumnFilter',
+      floatingFilter: true,
+    },
+    {
+      headerName: '메뉴',
+      field: 'menu',
+      width: 124,
+    },
+    {
+      headerName: '처리 번호',
+      field: 'vocNumber',
+      width: 124,
+    },
+    {
+      headerName: '내용',
+      field: 'content',
+      cellRenderer: LobRenderer,
+      onCellDoubleClicked: onCellDoubleClickedContent,
+    },
+    {
+      headerName: '요청자',
+      field: 'requestUser',
+      width: 124,
+    },
+    {
+      headerName: '요청일',
+      field: 'requestDate',
+      width: 124,
+      cellEditor: 'agDateCellEditor',
+      editable: true,
+      valueFormatter: dateValueFormatter,
+    },
+    {
+      headerName: '납기 요청일',
+      field: 'deliveryRequestDate',
+      width: 130,
+      cellEditor: 'agDateCellEditor',
+      editable: true,
+      valueFormatter: dateValueFormatter,
+    },
+    {
+      headerName: '중요도',
+      field: 'importance',
+      cellRenderer: ImportanceRenderer,
+      cellEditor: 'agRichSelectCellEditor',
+      editable: true,
+      cellEditorParams: {
+        values: importanceArray,
+        cellRenderer: ImportanceRenderer,
+        cellEditorPopup: true,
+      },
+      width: 110,
+    },
+    {
+      headerName: '첨부파일',
+      field: 'attachment',
+      width: 124,
+    },
+    {
+      headerName: '담당자',
+      field: 'manager',
+      width: 124,
+    },
+    {
+      headerName: '진행 상황',
+      field: 'progress',
+      cellRenderer: RequestProgressRenderer,
+      cellEditor: 'agRichSelectCellEditor',
+      editable: true,
+      cellEditorParams: {
+        values: requestProgressArray,
+        cellRenderer: RequestProgressRenderer,
+        cellEditorPopup: true,
+      },
+      width: 124,
+      floatingFilter: true,
+    },
+    {
+      headerName: '완료 예정일',
+      field: 'expectedCompletionDate',
+      width: 140,
+      cellEditor: 'agDateCellEditor',
+      editable: true,
+      valueFormatter: dateValueFormatter,
+    },
+    {
+      headerName: '완료일',
+      field: 'completionDate',
+      width: 124,
+      cellEditor: 'agDateCellEditor',
+      editable: true,
+      valueFormatter: dateValueFormatter,
+    },
+    {
+      headerName: '수정자',
+      field: 'updateUser',
+      width: 124,
+    },
+    {
+      headerName: '수정일',
+      field: 'updateDate',
+      width: 124,
+    },
+  ]
+
   return (
-    <div style={{ height: '100%' }}>
+    <S.Container>
       <IbsModal
         open={isOpenRegistration}
         setOpen={setIsRegistration}
         width='800px'
-        height='800px'
+        height='500px'
         title='VoC 등록'
         button={
           <IbsButton
@@ -191,6 +321,29 @@ const Voc = () => {
         }
       >
         <VocRegistration ref={refs.vocRegistration} />
+      </IbsModal>
+      <IbsModal
+        open={isOpenContent}
+        setOpen={setIsOpenContent}
+        width='800px'
+        height='500px'
+        title='VoC 내용'
+        button={
+          <IbsButton
+            formControllStyle={{ marginRight: 10 }}
+            width={70}
+            onClick={onClickContentSaveButton}
+          >
+            변경
+          </IbsButton>
+        }
+      >
+        <IbsEditor
+          width='800px'
+          height='400px'
+          content={content}
+          setContent={setContent}
+        />
       </IbsModal>
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <IbsTextField label='검색어' />
@@ -221,8 +374,11 @@ const Voc = () => {
         defaultRowData={rowData}
         gridHeight={'90%'}
         gridOptions={{}}
+        rowStyle={{ '--ag-line-height': '24px' }}
+        getRowHeight={getRowHeight}
+        getRowId={getRowId}
       />
-    </div>
+    </S.Container>
   )
 }
 
