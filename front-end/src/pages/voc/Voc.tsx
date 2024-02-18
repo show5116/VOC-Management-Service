@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useMemo } from 'react'
+import { useState, useRef, useCallback } from 'react'
 
 import Aggrid from '@components/aggrid/Aggrid'
 import {
@@ -33,6 +33,7 @@ import ibsAxios from '@/utils/ibsAxios'
 import { colors } from '@components/styles/colors'
 
 import * as S from './Voc.style'
+import AttachmentRenderer from '@components/aggrid/AttachmentRenderer'
 
 const testRowData: any[] = [
   {
@@ -253,6 +254,7 @@ const Voc = () => {
     {
       headerName: '첨부파일',
       field: 'attachment',
+      cellRenderer: AttachmentRenderer,
       width: 124,
     },
     {
