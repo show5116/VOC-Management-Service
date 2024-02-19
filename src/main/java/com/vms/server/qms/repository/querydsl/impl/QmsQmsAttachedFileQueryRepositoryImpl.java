@@ -28,10 +28,10 @@ public class QmsQmsAttachedFileQueryRepositoryImpl implements QmsQmsAttachedFile
                         qmsAttachFile.fileRemark, // remark
                         qmsAttachFile.filePath.as("filePathR"))) // filePathR
                 .from(qmsAttachFile)
-                .where(qmsAttachFile.plant.eq(plant)
-                        .and(qmsAttachFile.systemName.eq(systemName))
-                        .and(qmsAttachFile.qmsNumber.eq(qmsNumber))
-                        .and(qmsAttachFile.systemNameMtype.eq(systemNameType)))
+                .where(qmsAttachFile.id.plant.eq(plant)
+                        .and(qmsAttachFile.id.systemName.eq(systemName))
+                        .and(qmsAttachFile.id.qmsNumber.eq(qmsNumber))
+                        .and(qmsAttachFile.id.systemNameMtype.eq(systemNameType)))
                 .fetch();
     }
 }

@@ -22,16 +22,18 @@ import IbsAttachment, {
   IbsAttachmentHandle,
 } from '@components/common/IbsAttachment'
 
+import { format } from 'date-fns'
+
 interface VocRegistrationProps {}
 
 export type VocRegistrationHandle = {
-  getData: () => object
+  getFormData: () => object
 }
 
 const VocRegistration = forwardRef<VocRegistrationHandle, VocRegistrationProps>(
   (vocRegistrationProps, ref) => {
     useImperativeHandle(ref, () => ({
-      getData,
+      getFormData,
     }))
 
     const [content, setContent] = useState('')
@@ -39,6 +41,7 @@ const VocRegistration = forwardRef<VocRegistrationHandle, VocRegistrationProps>(
     const refs = {
       requestKindCombo: useRef<IbsComboboxHandle>(null),
       importanceCombo: useRef<IbsComboboxHandle>(null),
+      systemCombo: useRef<IbsComboboxHandle>(null),
       plantCombo: useRef<IbsComboboxHandle>(null),
       managerCombo: useRef<IbsComboboxHandle>(null),
       menuText: useRef<IbsTextFieldHandle>(null),
@@ -52,17 +55,39 @@ const VocRegistration = forwardRef<VocRegistrationHandle, VocRegistrationProps>(
       })
     }, [])
 
-    const getData = () => ({
-      requestKind: refs.requestKindCombo.current!.getSelectedValues()[0],
-      importance: refs.importanceCombo.current!.getSelectedValues()[0],
-      plant: refs.plantCombo.current!.getSelectedValues()[0],
-      manager: refs.managerCombo.current!.getSelectedValues()[0],
-      menu: refs.menuText.current!.getValue(),
-      deliveryRequestDate:
-        refs.deliveryRequestDate.current!.getDate().startDate,
-      attachment: refs.attachment.current!.getFile(),
-      content: content,
-    })
+    const getFormData = () => {
+      const formData = new FormData()
+      formData.append('plant', refs.plantCombo.current!.getSelectedValues()[0])
+      formData.append('systemName', 'voc')
+      formData.append('revisionNo', '1')
+      formData.append('receptionDept', '')
+      formData.append(
+        'requiredResponseDate',
+        format(
+          refs.deliveryRequestDate.current!.getDate().startDate,
+          'yyyy-MM-dd',
+        ),
+      )
+      formData.append(
+        'personInCharge',
+        refs.managerCombo.current!.getSelectedValues()[0],
+      )
+      formData.append('requirement', content)
+      formData.append('file', refs.attachment.current!.getFile())
+      //formData.append('menu', refs.menuText.current!.getValue())
+      formData.append(
+        'remark',
+        refs.importanceCombo.current!.getSelectedValues()[0],
+      )
+      formData.append(
+        'classification',
+        refs.requestKindCombo.current!.getSelectedValues()[0],
+      )
+
+      //requestKind: refs.requestKindCombo.current!.getSelectedValues()[0],
+
+      return formData
+    }
 
     return (
       <>
@@ -80,6 +105,14 @@ const VocRegistration = forwardRef<VocRegistrationHandle, VocRegistrationProps>(
               color: `${colors.green}`,
             },
           ]}
+          required
+        />
+        <IbsCombobox
+          ref={refs.systemCombo}
+          label='System'
+          width='150px'
+          formControllStyle={{ marginRight: '10px' }}
+          defaultItems={[{ displayValue: '', value: '' }]}
           required
         />
         <IbsCombobox
@@ -121,6 +154,8 @@ const VocRegistration = forwardRef<VocRegistrationHandle, VocRegistrationProps>(
           formControllStyle={{ marginRight: '10px' }}
           defaultItems={[{ displayValue: '', value: '' }]}
         />
+        <br />
+        <br />
         <IbsAttachment ref={refs.attachment} />
         <br />
         <br />

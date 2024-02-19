@@ -3,31 +3,19 @@ package com.vms.server.domain.entity.qms;
 import javax.persistence.*;
 
 import com.vms.server.domain.entity.qms.id.QmsVocHistoryId;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import com.vms.server.domain.entity.qms.id.QmsVocStatusId;
+import lombok.*;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-@NoArgsConstructor
-@ToString
+@Builder(builderMethodName = "innerBuilder")
 @Entity
-@EntityListeners(AuditingEntityListener.class)
-@IdClass(QmsVocHistoryId.class)
 @Table(name = "QMS_VOC_HISTORY")
 public class QmsVocHistory {
   @Id
-  @Column(name = "PLANT")
-  public String plant;
-  @Id
-  @Column(name = "SYSTEM_NAME")
-  public String systemName;
-  @Id
-  @Column(name = "QMS_NUMBER")
-  public String qmsNumber;
-  @Id
-  @Column(name = "REVISION_NO")
-  public String revisionNo;
+  @EmbeddedId
+  public QmsVocHistoryId id;
   @Column(name = "ISSUE_DATE")
   public String issueDate;
   @Column(name = "CUSTOMER")
@@ -58,13 +46,34 @@ public class QmsVocHistory {
   public String personInCharge;
   @Column(name = "REQUIREMENT")
   public String requirement;
-  @Id
-  @Column(name = "TRANS_TIME")
-  public String transTime;
   @Column(name = "DEVICE")
   public String device;
   @Column(name = "UPDATE_DATE")
   public String updateDate;
   @Column(name = "UPDATE_USER")
   public String updateUser;
+
+  public QmsVocHistory(QmsVocStatus qmsVocStatus) {
+    QmsVocStatusId statusId = qmsVocStatus.getId();
+    this.id = new QmsVocHistoryId(statusId.getPlant(), statusId.getSystemName(),
+            statusId.getQmsNumber(), statusId.getRevisionNo(), qmsVocStatus.getUpdateDate());
+    this.issueDate = qmsVocStatus.getIssueDate();
+    this.customer = qmsVocStatus.getCustomer();
+    this.receptionDept = qmsVocStatus.getReceptionDept();
+    this.classification = qmsVocStatus.getClassification();
+    this.requiredResponseDate = qmsVocStatus.getRequiredResponseDate();
+    this.reponseDate = qmsVocStatus.getReponseDate();
+    this.remark = qmsVocStatus.getRemark();
+    this.addIssueFlag = qmsVocStatus.getAddIssueFlag();
+    this.closedFlag = qmsVocStatus.getClosedFlag();
+    this.regDate = qmsVocStatus.getRegDate();
+    this.regUser = qmsVocStatus.getRegUser();
+    this.closedDate = qmsVocStatus.getClosedDate();
+    this.closedUser = qmsVocStatus.getClosedUser();
+    this.personInCharge = qmsVocStatus.getPersonInCharge();
+    this.requirement = qmsVocStatus.getRequirement();
+    this.device = qmsVocStatus.getDevice();
+    this.updateDate = qmsVocStatus.getUpdateDate();
+    this.updateUser = qmsVocStatus.getUpdateUser();
+  }
 }

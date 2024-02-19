@@ -4,20 +4,17 @@ import com.vms.server.admin.service.FileService;
 import com.vms.server.domain.dto.QmsAttachFileDto;
 import com.vms.server.domain.vo.AttachedFileVo;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
@@ -42,7 +39,7 @@ public class FileController {
         }
 
         try {
-            //fileService.saveFiles(fileList,plant, systemName,qmsNumber);
+            //fileService.saveAttachFile(multipartFile, plant, qmsNumber, systemName, sysMType, sysSType, revisionNo, fileDesc);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>("Fail to upload", HttpStatus.BAD_REQUEST);
@@ -51,6 +48,25 @@ public class FileController {
         return new ResponseEntity<>("Files successfully uploaded!", HttpStatus.OK);
     }
 
+    @GetMapping("/download")
+    public ResponseEntity<InputStreamResource> downloadFIle(@RequestParam String fileId) throws IOException {
+        FileSystemResource fileSystemResource = new FileSystemResource(fileService.getFile(fileId));
+        File file = fileSystemResource.getFile();
+
+        ContentDisposition contentDisposition = ContentDisposition.builder("attachment")
+                .filename(file.getName(), StandardCharsets.UTF_8)
+                .build();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentDisposition(contentDisposition);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .contentLength(fileSystemResource.contentLength())
+                .headers(headers)
+                .body(new InputStreamResource(fileSystemResource.getInputStream()));
+    }
+    /*
     @PostMapping("/download/file")
     public void downloadFile(@RequestBody QmsAttachFileDto dto, HttpServletResponse response) throws IOException {
 
@@ -99,5 +115,5 @@ public class FileController {
                 zos.closeEntry();
             }
         }
-    }
+    }*/
 }

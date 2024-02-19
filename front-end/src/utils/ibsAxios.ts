@@ -10,4 +10,11 @@ const ibsAxios = axios.create({
   },
 })
 
+export const multipartConfig = {
+  headers: {
+    'Content-Type': 'multipart/form-data',
+    'Access-Control_Allow_Origin': '*',
+  },
+}
+
 export default ibsAxios

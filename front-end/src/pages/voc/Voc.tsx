@@ -1,4 +1,7 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
+
+import { useAppDispatch } from '@reducers/index'
+import { showAlert } from '@reducers/alertReducer/alertReducer'
 
 import Aggrid from '@components/aggrid/Aggrid'
 import {
@@ -17,6 +20,7 @@ import RequestProgressRenderer, {
   requestProgressArray,
 } from '@components/voc/ReqestProgressRenderer'
 import LobRenderer from '@components/aggrid/LobRenderer'
+import AttachmentRenderer from '@components/aggrid/AttachmentRenderer'
 
 import IbsTextField from '@components/common/IbsTextField'
 import IbsTypeButton from '@components/common/IbsTypeButton'
@@ -29,50 +33,10 @@ import VocRegistration, {
 } from '@components/voc/VocRegistration'
 
 import { FaMinus, FaPlus } from 'react-icons/fa'
-import ibsAxios from '@/utils/ibsAxios'
 import { colors } from '@components/styles/colors'
-
 import * as S from './Voc.style'
-import AttachmentRenderer from '@components/aggrid/AttachmentRenderer'
 
-const testRowData: any[] = [
-  {
-    requestKind: undefined,
-    service: 'SILICONMITUS',
-    menu: 'Lot Status',
-    vocNumber: 'V0000001',
-    content: '<u>Lot Status 신규 페이지 요청</u>',
-    requestUser: '김철수',
-    requestDate: new Date('2024-02-06'),
-    deliveryRequestDate: new Date('2024-04-01'),
-    importance: 'second',
-    attachment: 'aa.png',
-    manager: '육이슬',
-    progress: '',
-    expectedCompletionDate: undefined,
-    completionDate: undefined,
-    rowHeight: 40,
-  },
-  {
-    requestKind: 'error',
-    service: 'OMS',
-    menu: 'Lot History',
-    vocNumber: 'V0000002',
-    content: 'Lot 이력 검색 시 에러 발생',
-    requestUser: '김민수',
-    requestDate: new Date('2024-02-06'),
-    deliveryRequestDate: new Date('2024-02-12'),
-    importance: 'first',
-    attachment: 'bb.exl',
-    manager: '유영진',
-    progress: '',
-    expectedCompletionDate: undefined,
-    completionDate: undefined,
-    updateUser: '',
-    updateDate: '',
-    rowHeight: 80,
-  },
-]
+import ibsAxios, { multipartConfig } from '@/utils/ibsAxios'
 
 const dateValueFormatter = (params: any) => {
   if (!params.value) {
@@ -90,11 +54,17 @@ const Voc = () => {
     vocRegistration: useRef<VocRegistrationHandle>(null),
   }
 
-  const [rowData, setRowData] = useState<any[]>(testRowData)
+  const [rowData, setRowData] = useState<any[]>([])
   const [isOpenRegistration, setIsRegistration] = useState(false)
   const [isOpenContent, setIsOpenContent] = useState(false)
   const [content, setContent] = useState('')
   const [rowIndex, setRowIndex] = useState(0)
+
+  const dispatch = useAppDispatch()
+
+  useEffect(() => {
+    getRowData()
+  }, [])
 
   const LineHeightCellRenderer = (props: any) => {
     const onClickMinus = () => {
@@ -144,8 +114,24 @@ const Voc = () => {
   }
 
   const onClickRegistButton = () => {
-    refs.vocRegistration.current!.getData()
-    //ibsAxios.post()
+    const formData = refs.vocRegistration.current!.getFormData()
+
+    const success = (response: any) => {
+      dispatch(
+        showAlert({
+          isOpen: true,
+          message: '성공하였습니다',
+          type: 'success',
+        }),
+      )
+
+      setIsRegistration(false)
+      getRowData()
+    }
+
+    const config = multipartConfig
+
+    ibsAxios.post('/voc', formData, config).then(success)
   }
 
   const onClickContentSaveButton = () => {
@@ -161,6 +147,23 @@ const Voc = () => {
     event.rowIndex !== null && setRowIndex(event.rowIndex)
     setIsOpenContent(true)
   }
+
+  const getRowData = useCallback(() => {
+    const success = (response: any) => {
+      setRowData(
+        response.data.map((data: any) => ({
+          ...data,
+          issueDate: data.issueDate && new Date(data.issueDate),
+          requiredResponseDate:
+            data.requiredResponseDate && new Date(data.requiredResponseDate),
+          closeDate: data.closeDate && new Date(data.closeDate),
+          updateDate: data.updateDate && new Date(data.updateDate),
+        })),
+      )
+    }
+
+    ibsAxios.get('/voc').then(success)
+  }, [])
 
   const getRowId = (params: any) => {
     return params.data.vocNumber
@@ -181,7 +184,7 @@ const Voc = () => {
     },
     {
       headerName: '요청 종류',
-      field: 'requestKind',
+      field: 'classification',
       width: 120,
       filter: 'agTextColumnFilter',
       cellRenderer: RequestKindRenderer,
@@ -195,8 +198,8 @@ const Voc = () => {
       floatingFilter: true,
     },
     {
-      headerName: 'Service',
-      field: 'service',
+      headerName: 'System',
+      field: 'systemName',
       width: 124,
       filter: 'agTextColumnFilter',
       floatingFilter: true,
@@ -208,23 +211,23 @@ const Voc = () => {
     },
     {
       headerName: '처리 번호',
-      field: 'vocNumber',
+      field: 'qmsNumber',
       width: 124,
     },
     {
       headerName: '내용',
-      field: 'content',
+      field: 'requirement',
       cellRenderer: LobRenderer,
       onCellDoubleClicked: onCellDoubleClickedContent,
     },
     {
       headerName: '요청자',
-      field: 'requestUser',
+      field: 'customer',
       width: 124,
     },
     {
       headerName: '요청일',
-      field: 'requestDate',
+      field: 'issueDate',
       width: 124,
       cellEditor: 'agDateCellEditor',
       editable: true,
@@ -232,7 +235,7 @@ const Voc = () => {
     },
     {
       headerName: '납기 요청일',
-      field: 'deliveryRequestDate',
+      field: 'requiredResponseDate',
       width: 130,
       cellEditor: 'agDateCellEditor',
       editable: true,
@@ -240,7 +243,7 @@ const Voc = () => {
     },
     {
       headerName: '중요도',
-      field: 'importance',
+      field: 'remark',
       cellRenderer: ImportanceRenderer,
       cellEditor: 'agRichSelectCellEditor',
       editable: true,
@@ -253,13 +256,13 @@ const Voc = () => {
     },
     {
       headerName: '첨부파일',
-      field: 'attachment',
+      field: 'fileName',
       cellRenderer: AttachmentRenderer,
       width: 124,
     },
     {
       headerName: '담당자',
-      field: 'manager',
+      field: 'personInCharge',
       width: 124,
     },
     {
@@ -286,7 +289,7 @@ const Voc = () => {
     },
     {
       headerName: '완료일',
-      field: 'completionDate',
+      field: 'closedDate',
       width: 124,
       cellEditor: 'agDateCellEditor',
       editable: true,

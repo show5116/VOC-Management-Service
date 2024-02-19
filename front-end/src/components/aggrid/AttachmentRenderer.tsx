@@ -3,29 +3,30 @@ import { useState, useRef, memo, useEffect } from 'react'
 import { Unstable_Popup as Popup } from '@mui/base/Unstable_Popup'
 
 import * as S from './AttachmentRenderer.style'
-import {
-  FaDownload,
-  FaFileUpload,
-  FaFolderOpen,
-  FaWindowClose,
-} from 'react-icons/fa'
+import { FaDownload, FaFileUpload, FaWindowClose } from 'react-icons/fa'
 import { FaDeleteLeft } from 'react-icons/fa6'
 import { colors } from '../styles/colors'
 import styled from '@emotion/styled'
+
+import ibsAxios from '@/utils/ibsAxios'
+import { AxiosRequestConfig, AxiosResponse } from 'axios'
 
 const AttachmentRenderer = (props: any) => {
   const [anchor, setAnchor] = useState<null | HTMLElement>(null)
   const [files, setFiles] = useState<File[]>([])
 
   const divRef = useRef<HTMLDivElement>(null)
+  const fileRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     console.log(files)
   }, [files])
 
   const onClickAttachment = (event: React.MouseEvent<HTMLElement>) => {
-    divRef.current!.focus()
-    setAnchor(event.currentTarget)
+    if (anchor === null) {
+      divRef.current!.focus()
+      setAnchor(event.currentTarget)
+    }
   }
 
   const onBlurAttachment = (event: React.FocusEvent<HTMLElement>) => {
@@ -45,7 +46,38 @@ const AttachmentRenderer = (props: any) => {
     setAnchor(null)
   }
 
-  const onClickSave = () => {}
+  const onClickSave = () => {
+    const config: AxiosRequestConfig = {
+      responseType: 'blob',
+      params: {
+        fileId: props.data.fileId,
+      },
+    }
+
+    const success = (response: AxiosResponse) => {
+      const blob = new Blob([response.data])
+
+      const fileObjectUrl = window.URL.createObjectURL(blob)
+
+      const link = document.createElement('a')
+      link.href = fileObjectUrl
+      link.style.display = 'none'
+
+      link.download = props.data.fileName
+
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+
+      window.URL.revokeObjectURL(fileObjectUrl)
+    }
+
+    ibsAxios.get('/download', config).then(success)
+  }
+
+  const onClickChange = () => {
+    fileRef.current!.click()
+  }
 
   const handleFileChange = (e: any) => {
     setFiles(e.target.files)
@@ -77,10 +109,14 @@ const AttachmentRenderer = (props: any) => {
               <FaDownload color={iconColor} size='20px' />
               <span>저장</span>
             </S.AttachmentButton>
-            <S.AttachmentButton>
+            <S.AttachmentButton onClick={onClickChange}>
+              <VisuallyHiddenInput
+                ref={fileRef}
+                type='file'
+                onChange={handleFileChange}
+              />
               <FaFileUpload color={iconColor} size='20px' />
               <span>변경</span>
-              <VisuallyHiddenInput type='file' onChange={handleFileChange} />
             </S.AttachmentButton>
             <S.AttachmentButton onClick={onClickDelete}>
               <FaDeleteLeft color={iconColor} size='20px' />

@@ -1,7 +1,6 @@
 package com.vms.server.admin.repository.querydsl.impl;
 
 import com.vms.server.admin.repository.querydsl.AdminQmsAttachedFileQueryRepository;
-import com.vms.server.domain.entity.qms.QQmsAttachFile;
 import com.vms.server.domain.vo.QmsAttachFileVo;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -19,19 +18,19 @@ public class AdminQmsAttachedFileQueryRepositoryImpl implements AdminQmsAttached
     @Override
     public List<QmsAttachFileVo> getSearchAllAttachedFile(String plant) {
 
-        return jpaQueryFactory.select(Projections.fields(QmsAttachFileVo.class, qmsAttachFile.systemName,
-                        qmsAttachFile.qmsNumber,
-                        qmsAttachFile.revisionNo,
-                        qmsAttachFile.systemNameMtype,
-                        qmsAttachFile.systemNameStype,
+        return jpaQueryFactory.select(Projections.fields(QmsAttachFileVo.class, qmsAttachFile.id.systemName,
+                        qmsAttachFile.id.qmsNumber,
+                        qmsAttachFile.id.revisionNo,
+                        qmsAttachFile.id.systemNameMtype,
+                        qmsAttachFile.id.systemNameStype,
                         qmsAttachFile.orgFileId,
                         qmsAttachFile.filePath))
                 .from(qmsAttachFile)
-                .where(qmsAttachFile.plant.eq(plant)
+                .where(qmsAttachFile.id.plant.eq(plant)
                         .and(qmsAttachFile.filePath.isNotNull()))
-                .orderBy(qmsAttachFile.systemName.asc(),
-                        qmsAttachFile.qmsNumber.asc(),
-                        qmsAttachFile.fileSeq.asc())
+                .orderBy(qmsAttachFile.id.systemName.asc(),
+                        qmsAttachFile.id.qmsNumber.asc(),
+                        qmsAttachFile.id.fileSeq.asc())
                 .fetch();
     }
 }

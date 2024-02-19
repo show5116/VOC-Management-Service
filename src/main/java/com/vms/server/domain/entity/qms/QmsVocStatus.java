@@ -3,65 +3,86 @@ package com.vms.server.domain.entity.qms;
 import javax.persistence.*;
 
 import com.vms.server.domain.entity.qms.id.QmsVocStatusId;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 @Getter
-@NoArgsConstructor
-@ToString
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder(builderMethodName = "innerBuilder")
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@IdClass(QmsVocStatusId.class)
 @Table(name = "QMS_VOC_STATUS")
 public class QmsVocStatus {
   @Id
-  @Column(name = "PLANT")
-  public String plant; // plant
-  @Id
-  @Column(name = "SYSTEM_NAME")
-  public String systemName; // service
-  @Id
-  @Column(name = "QMS_NUMBER")
-  public String qmsNumber; // 문서 번호
-  @Id
-  @Column(name = "REVISION_NO")
-  public String revisionNo; // history 필요한가?
+  @EmbeddedId
+  private QmsVocStatusId id;
   @Column(name = "ISSUE_DATE")
-  public String issueDate; // 요청일
+  @CreatedDate
+  private String issueDate; // 요청일
   @Column(name = "CUSTOMER")
-  public String customer; // 등록자
+  @CreatedBy
+  private String customer; // 등록자
   @Column(name = "RECEPTION_DEPT")
-  public String receptionDept;
+  private String receptionDept;
   @Column(name = "CLASSIFICATION")
-  public String classification; // 요청 종류
+  private String classification; // 요청 종류
   @Column(name = "REQUIRED_RESPONSE_DATE")
-  public String requiredResponseDate; // 납기 요청일
+  private String requiredResponseDate; // 납기 요청일
   @Column(name = "REPONSE_DATE")
-  public String reponseDate;
+  private String reponseDate;
   @Column(name = "REMARK")
-  public String remark; // 중요도
+  private String remark; // 중요도
   @Column(name = "ADD_ISSUE_FLAG")
-  public String addIssueFlag;
+  private String addIssueFlag;
   @Column(name = "CLOSED_FLAG")
-  public String closedFlag; // 완료 여부
+  private String closedFlag; // 완료 여부
   @Column(name = "REG_DATE")
-  public String regDate;
+  private String regDate;
   @Column(name = "REG_USER")
-  public String regUser;
+  private String regUser;
   @Column(name = "CLOSED_DATE")
-  public String closedDate; // 완료일
+  private String closedDate; // 완료일
   @Column(name = "CLOSED_USER")
-  public String closedUser; // 완료자
+  private String closedUser; // 완료자
   @Column(name = "PERSON_IN_CHARGE")
-  public String personInCharge; // 담당자
+  private String personInCharge; // 담당자
   @Column(name = "REQUIREMENT")
-  public String requirement; // 내용
+  private String requirement; // 내용
   @Column(name = "DEVICE")
-  public String device;
+  private String device;
   @Column(name = "UPDATE_DATE")
-  public String updateDate; // 수정일
+  @LastModifiedDate
+  private String updateDate; // 수정일
   @Column(name = "UPDATE_USER")
-  public String updateUser; // 수정자
+  @LastModifiedBy
+  private String updateUser; // 수정자
+
+  @PrePersist
+  public void prePersist() {
+    String customLocalDateTimeFormat = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+    this.issueDate = customLocalDateTimeFormat;
+    this.updateDate = customLocalDateTimeFormat;
+  }
+
+  @PreUpdate
+  public void preUpdate() {
+    String customLocalDateTimeFormat = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+    this.updateDate = customLocalDateTimeFormat;
+  }
+
+  public QmsVocHistory toHistory() {
+    return new QmsVocHistory(this);
+  }
+
+  public static QmsVocStatusBuilder builder(QmsVocStatusId id) {
+    return innerBuilder().id(id);
+  }
 }

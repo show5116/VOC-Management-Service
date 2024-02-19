@@ -21,8 +21,10 @@ const IbsAttachment = forwardRef<IbsAttachmentHandle, IbsAttachmentProps>(
     }))
     const [files, setFiles] = useState<File[]>([])
 
-    const getFile = () => files[0]
-
+    const getFile = () => {
+      console.log(files[0])
+      return files[0]
+    }
     const handleFileChange = (e: any) => {
       setFiles(e.target.files)
     }
