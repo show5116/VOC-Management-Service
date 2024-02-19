@@ -6,6 +6,12 @@ export type TRequestKind = 'new' | 'error' | 'improvement'
 
 export const requestKindArray = ['new', 'error', 'improvement']
 
+export const getRequestKindCellStyle = (props: IProps) => {
+  return {
+    backgroundColor: requestKind[props.value]?.backgroundColor,
+  }
+}
+
 interface ICellStyle {
   backgroundColor: (typeof colors)[Colors]
   value: string

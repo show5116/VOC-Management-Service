@@ -27,6 +27,7 @@ export const rootColor = css`
     --light-brown: #806d48;
     --white: #fff;
     --black: #212121;
+    --light-black: #545454;
     --dark-grey: #505050;
     --grey: #f0efef;
     --light-grey: #e6e6e6;
@@ -55,6 +56,7 @@ export const colors = {
   lightBrown: 'var(--light-brown)',
   white: 'var(--white)',
   black: 'var(--black)',
+  lightBlack: 'var(--light-black)',
   darkGrey: 'var(--dark-grey)',
   grey: 'var(--grey)',
   lightGrey: 'var(--light-grey)',
