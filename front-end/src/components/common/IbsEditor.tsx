@@ -14,7 +14,7 @@ const modules = {
       { indent: '+1' },
     ],
     ['link', 'image'],
-    [{ align: [] }, { color: [] }, { background: [] }], // dropdown with defaults from theme
+    [{ align: [] }, { color: [] }, { background: [] }],
     ['clean'],
   ],
 }
@@ -46,12 +46,17 @@ interface IProps {
 
 const IbsEditor = (props: IProps) => {
   return (
-    <>
+    <div
+      style={{
+        width: `${props.width}`,
+        height: `${props.height}`,
+      }}
+    >
       {props.title && <h3>{props.title}</h3>}
       <ReactQuill
         style={{
           width: `${props.width}`,
-          height: `${props.height}`,
+          height: `calc(${props.height} - 42.84px)`,
         }}
         theme='snow'
         modules={modules}
@@ -59,7 +64,7 @@ const IbsEditor = (props: IProps) => {
         value={props.content || ''}
         onChange={props.setContent}
       />
-    </>
+    </div>
   )
 }
 

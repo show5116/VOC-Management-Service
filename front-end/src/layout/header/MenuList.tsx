@@ -40,7 +40,7 @@ const navCss = css`
   width: 100%;
 `
 const menuCss = css`
-  width: 170px;
+  width: 200px;
   text-align: center;
   overflow: hidden;
 `
@@ -150,7 +150,9 @@ const MenuList = ({
               }}
             >
               {menus.map((menu) => (
-                <ul key={menu.menuKey}>{getSubDepthMenu(menu)}</ul>
+                <ul style={{ width: '200px' }} key={menu.menuKey}>
+                  {getSubDepthMenu(menu)}
+                </ul>
               ))}
             </div>
           </div>

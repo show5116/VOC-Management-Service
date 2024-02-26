@@ -1,4 +1,4 @@
-import { forwardRef, memo, useImperativeHandle, useState } from 'react'
+import { Dispatch, memo, SetStateAction } from 'react'
 
 import styled from '@emotion/styled'
 import Button from '@mui/material/Button'
@@ -7,58 +7,107 @@ import TextField from '@mui/material/TextField'
 import InputAdornment from '@mui/material/InputAdornment'
 
 import { FaFile, FaRegSave } from 'react-icons/fa'
+import { FaDeleteLeft } from 'react-icons/fa6'
 
-interface IbsAttachmentProps {}
-
-export type IbsAttachmentHandle = {
-  getFile: () => File
+interface IbsAttachmentProps {
+  files: File[]
+  setFiles: Dispatch<SetStateAction<File[]>>
+  multiple?: boolean
+  accept?: string
 }
 
-const IbsAttachment = forwardRef<IbsAttachmentHandle, IbsAttachmentProps>(
-  (attachmentProps, ref) => {
-    useImperativeHandle(ref, () => ({
-      getFile,
-    }))
-    const [files, setFiles] = useState<File[]>([])
+interface AttachmentProps {
+  file?: File
+  index: number
+}
 
-    const getFile = () => {
-      console.log(files[0])
-      return files[0]
-    }
-    const handleFileChange = (e: any) => {
-      setFiles(e.target.files)
-    }
+const IbsAttachment = (props: IbsAttachmentProps) => {
+  const handleFileChange = (e: any) => {
+    const eventFiles = Array.from<File>(e.target.files)
+    props.setFiles([...props.files, ...eventFiles])
+  }
 
-    return (
-      <>
+  const onClickDeleteFile = (index: number) => {
+    const files = props.files
+    files.splice(index, 1)
+    props.setFiles([...files])
+  }
+
+  const Attachment = (attachmentProps: AttachmentProps) => (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'row',
+        gap: '10px',
+      }}
+    >
+      <TextField
+        style={{
+          width: attachmentProps.index ? '100%' : 'calc(100% - 160px)',
+        }}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position='start'>
+              <FaFile />
+            </InputAdornment>
+          ),
+          endAdornment: attachmentProps.file && (
+            <InputAdornment position='end'>
+              <FaDeleteLeft
+                cursor='pointer'
+                onClick={() => onClickDeleteFile(attachmentProps.index)}
+              />
+            </InputAdornment>
+          ),
+        }}
+        label='File'
+        size='small'
+        value={
+          attachmentProps.file
+            ? attachmentProps.file.name
+            : '파일을 첨부할 수 있습니다.'
+        }
+        disabled={true}
+      />
+      {!attachmentProps.index && (
         <Button
-          style={{ marginRight: '10px' }}
+          style={{ width: '150px' }}
           component='label'
           variant='contained'
           startIcon={<FaRegSave />}
         >
           파일 업로드
-          <VisuallyHiddenInput type='file' onChange={handleFileChange} />
-        </Button>
-        <FormControl style={{ width: '180px' }}>
-          <TextField
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position='start'>
-                  <FaFile />
-                </InputAdornment>
-              ),
-            }}
-            label='File'
-            size='small'
-            value={files[0]?.name}
-            disabled={true}
+          <VisuallyHiddenInput
+            type='file'
+            multiple={props.multiple}
+            accept={props.accept}
+            onChange={handleFileChange}
           />
-        </FormControl>
-      </>
-    )
-  },
-)
+        </Button>
+      )}
+    </div>
+  )
+
+  return (
+    <>
+      <FormControl
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '10px',
+        }}
+      >
+        {props.multiple && props.files.length ? (
+          props.files.map((file, index) => (
+            <Attachment key={file.name + index} file={file} index={index} />
+          ))
+        ) : (
+          <Attachment index={0} />
+        )}
+      </FormControl>
+    </>
+  )
+}
 
 export default memo(IbsAttachment)
 

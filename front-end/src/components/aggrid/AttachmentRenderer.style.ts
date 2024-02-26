@@ -1,6 +1,10 @@
 import { styled } from 'styled-components'
 import { colors } from '@components/styles/colors'
 
+export const Container = styled.div`
+  cursor: pointer;
+`
+
 export const PopupBody = styled.div`
   display: flex;
   flex-direction: column;
@@ -59,4 +63,8 @@ export const AttachmentButton = styled.button`
     color: ${colors.darkGrey};
     font-size: 0.9rem;
   }
+`
+
+export const NonFileSpan = styled.span`
+  opacity: 0.7;
 `

@@ -7138,7 +7138,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"d3-shape@npm:3":
+"d3-shape@npm:3, d3-shape@npm:^3.2.0":
   version: 3.2.0
   resolution: "d3-shape@npm:3.2.0"
   dependencies:
@@ -16941,6 +16941,7 @@ __metadata:
     axios: ^1.6.5
     classnames: ^2.3.2
     craco-alias: ^3.0.1
+    d3-shape: ^3.2.0
     date-fns: ^3.0.6
     eslint: ^8.55.0
     eslint-config-prettier: ^9.1.0

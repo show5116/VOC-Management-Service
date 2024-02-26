@@ -14,15 +14,13 @@ import IbsTextField, {
 import IbsDatePicker, {
   IbsDatePickerHandel,
 } from '@components/common/IbsDatePicker'
-
-import ibsAxios from '@/utils/ibsAxios'
-import { colors } from '@components/styles/colors'
 import IbsEditor from '@components/common/IbsEditor'
-import IbsAttachment, {
-  IbsAttachmentHandle,
-} from '@components/common/IbsAttachment'
+import IbsAttachment from '@components/common/IbsAttachment'
 
+import { colors } from '@components/styles/colors'
 import { format } from 'date-fns'
+import ibsAxios from '@/utils/ibsAxios'
+import { daysFromToday } from '@/utils/dateUtils'
 
 interface VocRegistrationProps {}
 
@@ -37,6 +35,7 @@ const VocRegistration = forwardRef<VocRegistrationHandle, VocRegistrationProps>(
     }))
 
     const [content, setContent] = useState('')
+    const [files, setFiles] = useState<File[]>([])
 
     const refs = {
       requestKindCombo: useRef<IbsComboboxHandle>(null),
@@ -46,7 +45,6 @@ const VocRegistration = forwardRef<VocRegistrationHandle, VocRegistrationProps>(
       managerCombo: useRef<IbsComboboxHandle>(null),
       menuText: useRef<IbsTextFieldHandle>(null),
       deliveryRequestDate: useRef<IbsDatePickerHandel>(null),
-      attachment: useRef<IbsAttachmentHandle>(null),
     }
 
     useEffect(() => {
@@ -73,7 +71,9 @@ const VocRegistration = forwardRef<VocRegistrationHandle, VocRegistrationProps>(
         refs.managerCombo.current!.getSelectedValues()[0],
       )
       formData.append('requirement', content)
-      formData.append('file', refs.attachment.current!.getFile())
+      for (let i = 0; i < files.length; i++) {
+        formData.append('files', files[i])
+      }
       //formData.append('menu', refs.menuText.current!.getValue())
       formData.append(
         'remark',
@@ -132,6 +132,7 @@ const VocRegistration = forwardRef<VocRegistrationHandle, VocRegistrationProps>(
           ref={refs.deliveryRequestDate}
           label='납기 요청일'
           formControllStyle={{ marginRight: '10px' }}
+          startDate={daysFromToday(7)}
         />
         <IbsCombobox
           ref={refs.importanceCombo}
@@ -156,15 +157,14 @@ const VocRegistration = forwardRef<VocRegistrationHandle, VocRegistrationProps>(
         />
         <br />
         <br />
-        <IbsAttachment ref={refs.attachment} />
-        <br />
-        <br />
         <IbsEditor
           width='800px'
-          height='270px'
+          height='300px'
           content={content}
           setContent={setContent}
         />
+        <br />
+        <IbsAttachment files={files} multiple={true} setFiles={setFiles} />
       </>
     )
   },

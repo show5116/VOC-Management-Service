@@ -79,14 +79,12 @@ const Voc = () => {
       if (props.data.rowHeight === 40) {
         return
       }
-      console.log(rowData)
       rowData[props.rowIndex].rowHeight = rowData[props.rowIndex].rowHeight - 40
       props.node.setRowHeight(rowData[props.rowIndex].rowHeight)
       setRowData([...rowData])
     }
 
     const onClickPlus = () => {
-      console.log(rowData)
       rowData[props.rowIndex].rowHeight = rowData[props.rowIndex].rowHeight + 40
       props.node.setRowHeight(rowData[props.rowIndex].rowHeight)
       setRowData([...rowData])
@@ -145,7 +143,6 @@ const Voc = () => {
   }
 
   const onClickContentSaveButton = () => {
-    console.log(rowData)
     rowData[rowIndex].requirement = content
     setRowData([...rowData])
     setIsOpenContent(false)
@@ -276,7 +273,9 @@ const Voc = () => {
     {
       headerName: '첨부파일',
       field: 'fileName',
-      cellRenderer: AttachmentRenderer,
+      cellRenderer: (props: any) => (
+        <AttachmentRenderer getRowData={getRowData} {...props} />
+      ),
       width: 124,
     },
     {
@@ -403,7 +402,7 @@ const Voc = () => {
       </S.Menu>
       <Aggrid
         columns={columns}
-        defaultRowData={rowData}
+        rowData={rowData}
         gridHeight={'90%'}
         gridOptions={{}}
         getRowHeight={getRowHeight}

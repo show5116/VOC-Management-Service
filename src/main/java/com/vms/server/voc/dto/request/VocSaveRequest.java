@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter @Setter
 public class VocSaveRequest {
@@ -19,11 +21,11 @@ public class VocSaveRequest {
     private String personInCharge;
     private String requirement;
     private String classification;
-    private MultipartFile file;
+    private List<MultipartFile> files;
 
     public FileUploadRequest makeFileRequest(String qmsNumber) {
         return FileUploadRequest.builder()
-                .file(file)
+                .files(files)
                 .plant(plant)
                 .systemName(systemName)
                 .systemNameMtype("VOC")

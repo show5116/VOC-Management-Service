@@ -49,7 +49,7 @@ public class VocService {
     public void saveNewVoc(VocSaveRequest request) throws IOException {
         String qmsNumber = this.makeNewVocNumber();
 
-        if (request.getFile() != null) {
+        if (request.getFiles() != null && !request.getFiles().isEmpty()) {
             fileService.uploadFile(
                     request.makeFileRequest(qmsNumber));
         }

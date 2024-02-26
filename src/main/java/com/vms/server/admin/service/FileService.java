@@ -10,5 +10,6 @@ import java.util.List;
 
 public interface FileService {
     void uploadFile(FileUploadRequest request) throws IOException;
+    void deleteFile(String fileId) throws IOException;
     String getFile(String fileId);
 }
