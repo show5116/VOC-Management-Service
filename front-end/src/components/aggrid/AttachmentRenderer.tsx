@@ -18,10 +18,6 @@ const AttachmentRenderer = (props: any) => {
   const divRef = useRef<HTMLDivElement>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
-  useEffect(() => {
-    console.log(files)
-  }, [files])
-
   const onClickAttachment = (event: React.MouseEvent<HTMLElement>) => {
     if (anchor === null) {
       divRef.current!.focus()

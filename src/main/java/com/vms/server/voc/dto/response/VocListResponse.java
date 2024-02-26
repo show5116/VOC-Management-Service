@@ -1,9 +1,13 @@
 package com.vms.server.voc.dto.response;
 
 import com.querydsl.core.annotations.QueryProjection;
+import com.vms.server.domain.entity.qms.QmsAttachFile;
+import com.vms.server.domain.entity.qms.QmsVocStatus;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -11,6 +15,7 @@ public class VocListResponse {
     private String plant;
     private String systemName;
     private String qmsNumber;
+    private String revisionNo;
     private String issueDate;
     private String customer;
     private String classification;
@@ -25,23 +30,27 @@ public class VocListResponse {
     private String fileId;
     private String fileName;
 
-    @QueryProjection
-    public VocListResponse(String plant, String systemName, String qmsNumber, String issueDate, String customer, String classification, String requiredResponseDate, String remark, String closedDate, String closedUser, String personInCharge, String requirement, String updateDate, String updateUser, String fileId, String fileName) {
-        this.plant = plant;
-        this.systemName = systemName;
-        this.qmsNumber = qmsNumber;
-        this.issueDate = issueDate;
-        this.customer = customer;
-        this.classification = classification;
-        this.requiredResponseDate = requiredResponseDate;
-        this.remark = remark;
-        this.closedDate = closedDate;
-        this.closedUser = closedUser;
-        this.personInCharge = personInCharge;
-        this.requirement = requirement;
-        this.updateDate = updateDate;
-        this.updateUser = updateUser;
-        this.fileId = fileId;
-        this.fileName = fileName;
+    public VocListResponse(QmsVocStatus qmsVocStatus) {
+        this.plant = qmsVocStatus.getId().getPlant();
+        this.systemName = qmsVocStatus.getId().getSystemName();
+        this.qmsNumber = qmsVocStatus.getId().getQmsNumber();
+        this.revisionNo = qmsVocStatus.getId().getRevisionNo();
+        this.issueDate = qmsVocStatus.getIssueDate();
+        this.customer = qmsVocStatus.getCustomer();
+        this.classification = qmsVocStatus.getClassification();
+        this.requiredResponseDate = qmsVocStatus.getRequiredResponseDate();
+        this.remark = qmsVocStatus.getRemark();
+        this.closedDate = qmsVocStatus.getClosedDate();
+        this.closedUser = qmsVocStatus.getClosedUser();
+        this.personInCharge = qmsVocStatus.getPersonInCharge();
+        this.requirement = qmsVocStatus.getRequirement();
+        this.updateDate = qmsVocStatus.getUpdateDate();
+        this.updateUser = qmsVocStatus.getUpdateUser();
+        this.fileId = qmsVocStatus.getAttachFiles()
+                .stream().map(QmsAttachFile::getRealFileId)
+                .collect(Collectors.joining(","));
+        this.fileName = qmsVocStatus.getAttachFiles()
+                .stream().map(QmsAttachFile::getOrgFileId)
+                .collect(Collectors.joining(","));
     }
 }

@@ -37,10 +37,10 @@ const ImportanceRenderer = (props: IProps) => {
         fontWeight: 500,
         width: 90,
         textAlign: 'center',
-        backgroundColor: importance[props.value].backgroundColor,
+        backgroundColor: importance[props.value]?.backgroundColor,
       }}
     >
-      {importance[props.value].value}
+      {importance[props.value]?.value}
     </div>
   )
 }

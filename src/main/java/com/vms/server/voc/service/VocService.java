@@ -40,7 +40,9 @@ public class VocService {
 
     @Transactional(readOnly = true)
     public List<VocListResponse> getVocList() {
-        return qmsVocStatusRepository.findVocList();
+        List<QmsVocStatus> qmsVocStatusList = qmsVocStatusRepository.findAll();
+        return qmsVocStatusList.stream().map(VocListResponse::new)
+                .collect(Collectors.toList());
     }
 
     @Transactional

@@ -12,6 +12,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -65,16 +66,25 @@ public class QmsVocStatus {
   @LastModifiedBy
   private String updateUser; // 수정자
 
+  @OneToMany
+  @JoinColumns({
+          @JoinColumn(name = "plant", referencedColumnName = "plant"),
+          @JoinColumn(name = "system_name", referencedColumnName = "system_name"),
+          @JoinColumn(name = "qms_number", referencedColumnName = "qms_number"),
+          @JoinColumn(name = "revision_no", referencedColumnName = "revision_no")
+  })
+  private List<QmsAttachFile> attachFiles;
+
   @PrePersist
   public void prePersist() {
-    String customLocalDateTimeFormat = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+    String customLocalDateTimeFormat = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
     this.issueDate = customLocalDateTimeFormat;
     this.updateDate = customLocalDateTimeFormat;
   }
 
   @PreUpdate
   public void preUpdate() {
-    String customLocalDateTimeFormat = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+    String customLocalDateTimeFormat = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
     this.updateDate = customLocalDateTimeFormat;
   }
 

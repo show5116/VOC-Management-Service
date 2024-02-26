@@ -2,7 +2,6 @@ package com.vms.server.voc.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.vms.server.domain.entity.qms.QQmsAttachFile;
-import com.vms.server.voc.dto.response.QVocListResponse;
 import com.vms.server.voc.dto.response.VocListResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -13,7 +12,7 @@ import static com.vms.server.domain.entity.qms.QQmsVocStatus.qmsVocStatus;
 
 public interface QmsVocStatusRepositoryCustom {
 
-    List<VocListResponse> findVocList();
+    /*List<VocListResponse> findVocList();
 
     @RequiredArgsConstructor
     public class QmsVocStatusRepositoryCustomImpl implements QmsVocStatusRepositoryCustom {
@@ -25,6 +24,7 @@ public interface QmsVocStatusRepositoryCustom {
                             qmsVocStatus.id.plant,
                             qmsVocStatus.id.systemName,
                             qmsVocStatus.id.qmsNumber,
+                            qmsVocStatus.id.revisionNo,
                             qmsVocStatus.issueDate,
                             qmsVocStatus.customer,
                             qmsVocStatus.classification,
@@ -44,6 +44,6 @@ public interface QmsVocStatusRepositoryCustom {
                     .on(qmsVocStatus.id.qmsNumber.eq(qmsAttachFile.id.qmsNumber))
                     .fetch();
         }
-    }
+    }*/
 
 }

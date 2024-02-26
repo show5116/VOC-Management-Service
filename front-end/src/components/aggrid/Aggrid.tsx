@@ -40,10 +40,6 @@ const Aggrid = forwardRef<AggridHandle, AggridProps>((agGridProps, ref) => {
     ColDef<any, any>[] | ColGroupDef<any>[]
   >(columns)
 
-  /*useEffect(() => {
-    setRowData(defaultRowData)
-  }, [defaultRowData]) */
-
   return (
     <div style={{ height: gridHeight, width: gridWidth, margin: '10px 0px' }}>
       <div

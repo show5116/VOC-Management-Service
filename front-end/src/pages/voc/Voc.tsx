@@ -37,6 +37,11 @@ import { colors } from '@components/styles/colors'
 import * as S from './Voc.style'
 
 import ibsAxios, { multipartConfig } from '@/utils/ibsAxios'
+import { parse } from 'date-fns'
+import IbsCombobox, { IbsComboboxHandle } from '@/components/common/IbsCombobox'
+import IbsDatePicker, {
+  IbsDatePickerHandel,
+} from '@/components/common/IbsDatePicker'
 
 const dateValueFormatter = (params: any) => {
   if (!params.value) {
@@ -52,6 +57,9 @@ const dateValueFormatter = (params: any) => {
 const Voc = () => {
   const refs = {
     vocRegistration: useRef<VocRegistrationHandle>(null),
+    dateKindCombo: useRef<IbsComboboxHandle>(null),
+    startDatePicker: useRef<IbsDatePickerHandel>(null),
+    endDatePicker: useRef<IbsDatePickerHandel>(null),
   }
 
   const [rowData, setRowData] = useState<any[]>([])
@@ -71,12 +79,14 @@ const Voc = () => {
       if (props.data.rowHeight === 40) {
         return
       }
+      console.log(rowData)
       rowData[props.rowIndex].rowHeight = rowData[props.rowIndex].rowHeight - 40
       props.node.setRowHeight(rowData[props.rowIndex].rowHeight)
       setRowData([...rowData])
     }
 
     const onClickPlus = () => {
+      console.log(rowData)
       rowData[props.rowIndex].rowHeight = rowData[props.rowIndex].rowHeight + 40
       props.node.setRowHeight(rowData[props.rowIndex].rowHeight)
       setRowData([...rowData])
@@ -135,7 +145,8 @@ const Voc = () => {
   }
 
   const onClickContentSaveButton = () => {
-    rowData[rowIndex].content = content
+    console.log(rowData)
+    rowData[rowIndex].requirement = content
     setRowData([...rowData])
     setIsOpenContent(false)
   }
@@ -153,11 +164,19 @@ const Voc = () => {
       setRowData(
         response.data.map((data: any) => ({
           ...data,
-          issueDate: data.issueDate && new Date(data.issueDate),
+          rowHeight: 40,
+          issueDate:
+            data.issueDate &&
+            parse(data.issueDate, 'yyyyMMddHHmmss', new Date()),
           requiredResponseDate:
-            data.requiredResponseDate && new Date(data.requiredResponseDate),
-          closeDate: data.closeDate && new Date(data.closeDate),
-          updateDate: data.updateDate && new Date(data.updateDate),
+            data.requiredResponseDate &&
+            parse(data.requiredResponseDate, 'yyyyMMddHHmmss', new Date()),
+          closedDate:
+            data.closedDate &&
+            parse(data.closedDate, 'yyyyMMddHHmmss', new Date()),
+          updateDate:
+            data.updateDate &&
+            parse(data.updateDate, 'yyyyMMddHHmmss', new Date()),
         })),
       )
     }
@@ -166,7 +185,7 @@ const Voc = () => {
   }, [])
 
   const getRowId = (params: any) => {
-    return params.data.vocNumber
+    return params.data.qmsNumber + params.data.revisionNo
   }
 
   const getRowHeight = useCallback((params: RowHeightParams<any, any>) => {
@@ -350,36 +369,43 @@ const Voc = () => {
           setContent={setContent}
         />
       </IbsModal>
-      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <IbsTextField label='검색어' />
-        <IbsTypeButton
-          buttontype={'search'}
-          formControllStyle={{ marginLeft: 10 }}
-        />
-        <IbsButton
-          formControllStyle={{
-            marginLeft: 10,
-          }}
-          width={70}
-          onClick={() => setIsRegistration(true)}
-        >
-          등록
-        </IbsButton>
-        <IbsButton
-          formControllStyle={{
-            marginLeft: 10,
-          }}
-          width={70}
-        >
-          저장
-        </IbsButton>
-      </div>
+      <S.Menu>
+        <S.SearchCondition>
+          <IbsCombobox
+            ref={refs.dateKindCombo}
+            label='기간 종류'
+            width='160px'
+            defaultItems={[
+              { value: 'new', displayValue: '요청일' },
+              { value: 'error', displayValue: '납기 요청일' },
+              {
+                value: 'improvement',
+                displayValue: '완료 예정일',
+              },
+              {
+                value: 'improvement',
+                displayValue: '완료일',
+              },
+            ]}
+          />
+          <IbsDatePicker ref={refs.startDatePicker} type='date' />
+          <span>-</span>
+          <IbsDatePicker ref={refs.endDatePicker} type='date' />
+          <IbsTextField label='System' />
+        </S.SearchCondition>
+        <S.Buttons>
+          <IbsTypeButton buttontype={'search'} />
+          <IbsButton width={70} onClick={() => setIsRegistration(true)}>
+            등록
+          </IbsButton>
+          <IbsButton width={70}>저장</IbsButton>
+        </S.Buttons>
+      </S.Menu>
       <Aggrid
         columns={columns}
         defaultRowData={rowData}
         gridHeight={'90%'}
         gridOptions={{}}
-        rowStyle={{ '--ag-line-height': '24px' }}
         getRowHeight={getRowHeight}
         getRowId={getRowId}
       />

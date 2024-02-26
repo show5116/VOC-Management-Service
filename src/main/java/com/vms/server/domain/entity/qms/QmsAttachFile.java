@@ -50,9 +50,10 @@ public class QmsAttachFile {
 
   @PrePersist
   public void prePersist() {
-    String customLocalDateTimeFormat = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+    String customLocalDateTimeFormat = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
     this.createTime = customLocalDateTimeFormat;
   }
+
   public static QmsAttachFileBuilder builder(QmsAttachFileId id) {
     return innerBuilder().id(id);
   }

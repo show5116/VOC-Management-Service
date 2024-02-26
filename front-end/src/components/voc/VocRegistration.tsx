@@ -65,7 +65,7 @@ const VocRegistration = forwardRef<VocRegistrationHandle, VocRegistrationProps>(
         'requiredResponseDate',
         format(
           refs.deliveryRequestDate.current!.getDate().startDate,
-          'yyyy-MM-dd',
+          'yyyyMMddHHmmss',
         ),
       )
       formData.append(

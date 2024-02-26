@@ -9,7 +9,6 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-@Builder(builderMethodName = "innerBuilder")
 @Entity
 @Table(name = "QMS_VOC_HISTORY")
 public class QmsVocHistory {
