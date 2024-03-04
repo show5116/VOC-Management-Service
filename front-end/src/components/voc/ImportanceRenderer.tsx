@@ -2,9 +2,9 @@ import { memo } from 'react'
 import { Colors, colors } from '../styles/colors'
 import { TRequestKind } from '@components/voc/RequestKindRenderer'
 
-export type TImportance = 'first' | 'second' | 'third'
+export type TImportance = 'emergency' | 'fast' | 'normal'
 
-export const importanceArray = ['first', 'second', 'third']
+export const importanceArray = ['emergency', 'fast', 'normal']
 
 interface ICellStyle {
   backgroundColor: (typeof colors)[Colors]
@@ -12,17 +12,17 @@ interface ICellStyle {
 }
 
 const importance: Record<TImportance, ICellStyle> = {
-  first: {
+  emergency: {
     backgroundColor: colors.red,
-    value: '1순위',
+    value: '긴급',
   },
-  second: {
+  fast: {
     backgroundColor: colors.yellow,
-    value: '2순위',
+    value: '빠름',
   },
-  third: {
+  normal: {
     backgroundColor: colors.green,
-    value: '3순위',
+    value: '보통',
   },
 }
 

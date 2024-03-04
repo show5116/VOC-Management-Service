@@ -15,6 +15,7 @@ import IbsTextField from '@/components/common/IbsTextField'
 import IbsTypeButton from '@/components/common/IbsTypeButton'
 
 import * as S from './RequirementsProcessingStatus.style'
+import { AgGridReact } from 'ag-grid-react'
 
 const dataMain: any[] = [
   {
@@ -49,10 +50,55 @@ const dataMain: any[] = [
   },
 ]
 
+const rowDataMainTest: any[] = [
+  {
+    classification: '요청건수',
+    itm: 2,
+    itmViet: 34,
+    powerLogics: 55,
+    slilconMitus: 10,
+    abov: 0,
+    donghwa: 5,
+  },
+  {
+    classification: '처리건수',
+    itm: 2,
+    itmViet: 32,
+    powerLogics: 54,
+    slilconMitus: 7,
+    abov: 0,
+    donghwa: 4,
+  },
+]
+
 const columnMain: ColDef[] = [
   {
     headerName: '',
     field: 'classification',
+  },
+  {
+    headerName: 'ITM',
+    field: 'itm',
+  },
+  {
+    headerName: 'ITM-VIET',
+    field: 'itmViet',
+  },
+  {
+    headerName: '파워로직스',
+    field: 'powerLogics',
+  },
+  {
+    headerName: '실리콘 마이터스',
+    field: 'slilconMitus',
+  },
+  {
+    headerName: 'ABOV',
+    field: 'abov',
+  },
+  {
+    headerName: '동화ES',
+    field: 'donghwa',
   },
 ]
 
@@ -65,9 +111,11 @@ const RequirementsProcessingStatus = () => {
     dateKindCombo: useRef<IbsComboboxHandle>(null),
     startDatePicker: useRef<IbsDatePickerHandel>(null),
     endDatePicker: useRef<IbsDatePickerHandel>(null),
+    mainGridRef: useRef<AgGridReact>(null),
+    developerGridRef: useRef<AgGridReact>(null),
   }
 
-  const [rowDataMain, setRowDataMain] = useState<any[]>(dataMain)
+  const [rowDataMain, setRowDataMain] = useState<any[]>(rowDataMainTest)
   const [columnsMain, setColmnsMain] = useState<ColDef[]>(columnMain)
   const [rowDataDeveloper, setRowDataDeveloper] = useState<any[]>(dataDeveloper)
   const [columnsDeveloper, setColmnsDeveloper] =
@@ -108,7 +156,7 @@ const RequirementsProcessingStatus = () => {
         categoryXField: 'system',
       }),
     )
-    series1.data.setAll(rowDataMain)
+    series1.data.setAll(dataMain)
 
     let series2 = chart.series.push(
       am5xy.ColumnSeries.new(root, {
@@ -119,7 +167,7 @@ const RequirementsProcessingStatus = () => {
         categoryXField: 'system',
       }),
     )
-    series2.data.setAll(rowDataMain)
+    series2.data.setAll(dataMain)
 
     let legend = chart.children.push(am5.Legend.new(root, {}))
     legend.data.setAll(chart.series.values)
@@ -129,6 +177,10 @@ const RequirementsProcessingStatus = () => {
     return () => {
       root.dispose()
     }
+  }, [dataMain])
+
+  useEffect(() => {
+    refs.mainGridRef.current?.api?.autoSizeAllColumns(false)
   }, [rowDataMain])
 
   return (
@@ -157,19 +209,21 @@ const RequirementsProcessingStatus = () => {
           <IbsTypeButton buttontype={'search'} />
         </S.Buttons>
       </S.Menu>
-      <div id='chartdiv' style={{ width: '100%', height: '400px' }}></div>
+      <div id='chartdiv' style={{ width: '100%', height: '300px' }}></div>
       <Aggrid
+        gridRef={refs.mainGridRef}
         columns={columnsMain}
         rowData={rowDataMain}
         gridHeight={'30%'}
         gridOptions={{}}
       />
-      <Aggrid
+      {/*<Aggrid
+        gridRef={refs.developerGridRef}
         columns={columnsDeveloper}
         rowData={rowDataDeveloper}
         gridHeight={'30%'}
         gridOptions={{}}
-      />
+          />*/}
     </S.Container>
   )
 }

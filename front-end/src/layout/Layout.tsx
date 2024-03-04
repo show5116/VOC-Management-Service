@@ -5,7 +5,6 @@ import styled from '@emotion/styled'
 import React from 'react'
 import Contents from './contents/Contents'
 import Hearder from './header/Hearder'
-import WorkTabel from './left/WorkTabel'
 
 export const FlexDiv = styled.div(
   ({ main }: { main?: boolean }) => ({
@@ -21,7 +20,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     <div css={layoutCss}>
       <Hearder />
       <FlexDiv main>
-        <WorkTabel />
         <Contents children={children} />
       </FlexDiv>
     </div>

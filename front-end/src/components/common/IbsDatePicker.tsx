@@ -28,6 +28,7 @@ interface IbsDatePickerProps extends IbsBaseProps {
   type?: DatePickerType
   label?: string
   startDate?: Date
+  readOnly?: boolean
   onChangeIbsDatePicker?: (date: Date) => void
 }
 
@@ -102,7 +103,8 @@ const IbsDatePicker = forwardRef<IbsDatePickerHandel, IbsDatePickerProps>(
       }
     }, [targetDate, years])
 
-    const readOnly: boolean = type === 'week' ? true : false
+    const readOnly: boolean =
+      type === 'week' ? true : !!datePickerProps.readOnly
 
     const style: CSSProperties = type === 'week' ? { cursor: 'pointer' } : {}
 
@@ -117,6 +119,7 @@ const IbsDatePicker = forwardRef<IbsDatePickerHandel, IbsDatePickerProps>(
       >
         <DatePicker
           locale={enGB}
+          readOnly={datePickerProps.readOnly}
           renderCustomHeader={(params: ReactDatePickerCustomHeaderProps) =>
             CustomPickerHeader({ ...params }, years, months)
           }

@@ -59,7 +59,7 @@ const depthMenuCss = css`
   border-collapse: collapse;
 
   ul {
-    width: 168px;
+    width: 198px;
     text-align: center;
     border-left: 1px solid ${colors.lightGrey};
     border-right: 1px solid ${colors.lightGrey};
@@ -134,6 +134,7 @@ const MenuList = ({
           <div
             style={{
               //marginLeft: `${layoutWidths.left}`,
+              width: '100%',
               display: 'flex',
             }}
           >
@@ -150,9 +151,7 @@ const MenuList = ({
               }}
             >
               {menus.map((menu) => (
-                <ul style={{ width: '200px' }} key={menu.menuKey}>
-                  {getSubDepthMenu(menu)}
-                </ul>
+                <ul key={menu.menuKey}>{getSubDepthMenu(menu)}</ul>
               ))}
             </div>
           </div>

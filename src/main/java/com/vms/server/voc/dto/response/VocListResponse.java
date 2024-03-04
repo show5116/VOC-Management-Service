@@ -1,6 +1,5 @@
 package com.vms.server.voc.dto.response;
 
-import com.querydsl.core.annotations.QueryProjection;
 import com.vms.server.domain.entity.qms.QmsAttachFile;
 import com.vms.server.domain.entity.qms.QmsVocStatus;
 import lombok.AccessLevel;

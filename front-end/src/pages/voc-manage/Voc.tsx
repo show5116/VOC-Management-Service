@@ -4,10 +4,11 @@ import { useAppDispatch } from '@reducers/index'
 import { showAlert } from '@reducers/alertReducer/alertReducer'
 
 import Aggrid from '@components/aggrid/Aggrid'
+import { AgGridReact } from 'ag-grid-react'
 import {
   ColDef,
-  CellDoubleClickedEvent,
   RowHeightParams,
+  CellDoubleClickedEvent,
 } from 'ag-grid-community'
 
 import RequestKindRenderer, {
@@ -22,7 +23,6 @@ import RequestProgressRenderer, {
 import LobRenderer from '@components/aggrid/LobRenderer'
 import AttachmentRenderer from '@components/aggrid/AttachmentRenderer'
 
-import IbsTextField from '@components/common/IbsTextField'
 import IbsTypeButton from '@components/common/IbsTypeButton'
 import IbsButton from '@components/common/IbsButton'
 import IbsModal from '@components/common/IbsModal'
@@ -42,6 +42,8 @@ import IbsCombobox, { IbsComboboxHandle } from '@/components/common/IbsCombobox'
 import IbsDatePicker, {
   IbsDatePickerHandel,
 } from '@/components/common/IbsDatePicker'
+import { firstDayThisMonth, vocBaseFormat } from '@/utils/dateUtils'
+import VocModification from '@/components/voc/VocModification'
 
 const dateValueFormatter = (params: any) => {
   if (!params.value) {
@@ -60,18 +62,28 @@ const Voc = () => {
     dateKindCombo: useRef<IbsComboboxHandle>(null),
     startDatePicker: useRef<IbsDatePickerHandel>(null),
     endDatePicker: useRef<IbsDatePickerHandel>(null),
+    systemCombo: useRef<IbsComboboxHandle>(null),
+    gridRef: useRef<AgGridReact>(null),
   }
 
   const [rowData, setRowData] = useState<any[]>([])
   const [isOpenRegistration, setIsRegistration] = useState(false)
   const [isOpenContent, setIsOpenContent] = useState(false)
-  const [content, setContent] = useState('')
-  const [rowIndex, setRowIndex] = useState(0)
+  const [modifyData, setModifyData] = useState<any>()
 
   const dispatch = useAppDispatch()
 
   useEffect(() => {
-    getRowData()
+    setTimeout(getRowData, 1000)
+    ibsAxios.get('/combo-box/system-name').then((response: any) => {
+      refs.systemCombo.current!.setItems(response.data)
+    })
+    /*ibsAxios.get('/combo-box/plant').then((response: any) => {
+      refs.plantCombo.current!.setItems(response.data)
+    })
+    ibsAxios.get('/combo-box/person-in-charge').then((response: any) => {
+      refs.personInChargeCombo.current!.setItems(response.data)
+    })*/
   }, [])
 
   const LineHeightCellRenderer = (props: any) => {
@@ -137,48 +149,51 @@ const Voc = () => {
       getRowData()
     }
 
-    const config = multipartConfig
-
-    ibsAxios.post('/voc', formData, config).then(success)
+    ibsAxios.post('/voc', formData, multipartConfig).then(success)
   }
 
-  const onClickContentSaveButton = () => {
-    rowData[rowIndex].requirement = content
-    setRowData([...rowData])
-    setIsOpenContent(false)
-  }
-
-  const onCellDoubleClickedContent = (
-    event: CellDoubleClickedEvent<any, any>,
-  ) => {
-    setContent(event.value)
-    event.rowIndex !== null && setRowIndex(event.rowIndex)
+  const onCellDoubleClicked = (event: CellDoubleClickedEvent<any, any>) => {
+    setModifyData(event.data)
     setIsOpenContent(true)
   }
 
   const getRowData = useCallback(() => {
+    const config = {
+      params: {
+        dateKind: refs.dateKindCombo.current!.getSelectedValues()[0],
+        startDate: vocBaseFormat(
+          refs.startDatePicker.current!.getDate().startDate,
+        ),
+        endDate: vocBaseFormat(refs.endDatePicker.current!.getDate().startDate),
+        system: refs.systemCombo.current!.getSelectedValues()[0],
+      },
+    }
+
     const success = (response: any) => {
       setRowData(
         response.data.map((data: any) => ({
           ...data,
           rowHeight: 40,
-          issueDate:
-            data.issueDate &&
-            parse(data.issueDate, 'yyyyMMddHHmmss', new Date()),
-          requiredResponseDate:
-            data.requiredResponseDate &&
-            parse(data.requiredResponseDate, 'yyyyMMddHHmmss', new Date()),
-          closedDate:
-            data.closedDate &&
-            parse(data.closedDate, 'yyyyMMddHHmmss', new Date()),
-          updateDate:
-            data.updateDate &&
-            parse(data.updateDate, 'yyyyMMddHHmmss', new Date()),
+          issueDate: data.issueDate
+            ? parse(data.issueDate, 'yyyyMMddHHmmss', new Date())
+            : undefined,
+          requiredResponseDate: data.requiredResponseDate
+            ? parse(data.requiredResponseDate, 'yyyyMMddHHmmss', new Date())
+            : undefined,
+          expectedCompletionDate: data.expectedCompletionDate
+            ? parse(data.expectedCompletionDate, 'yyyyMMddHHmmss', new Date())
+            : undefined,
+          closedDate: data.closedDate
+            ? parse(data.closedDate, 'yyyyMMddHHmmss', new Date())
+            : undefined,
+          updateDate: data.updateDate
+            ? parse(data.updateDate, 'yyyyMMddHHmmss', new Date())
+            : undefined,
         })),
       )
     }
 
-    ibsAxios.get('/voc').then(success)
+    ibsAxios.get('/voc', config).then(success)
   }, [])
 
   const getRowId = (params: any) => {
@@ -191,17 +206,13 @@ const Voc = () => {
 
   const columns: ColDef[] = [
     {
-      checkboxSelection: true,
-      width: 40,
-    },
-    {
       cellRenderer: LineHeightCellRenderer,
-      width: 40,
+      minWidth: 40,
+      maxWidth: 40,
     },
     {
       headerName: '요청 종류',
       field: 'classification',
-      width: 120,
       filter: 'agTextColumnFilter',
       cellRenderer: RequestKindRenderer,
       cellEditor: 'agRichSelectCellEditor',
@@ -212,13 +223,14 @@ const Voc = () => {
         cellEditorPopup: true,
       },
       floatingFilter: true,
+      width: 120,
     },
     {
       headerName: 'System',
       field: 'systemName',
-      width: 124,
       filter: 'agTextColumnFilter',
       floatingFilter: true,
+      width: 124,
     },
     {
       headerName: '메뉴',
@@ -229,12 +241,15 @@ const Voc = () => {
       headerName: '처리 번호',
       field: 'qmsNumber',
       width: 124,
+      cellStyle: { cursor: 'pointer' },
+      onCellDoubleClicked: onCellDoubleClicked,
     },
     {
       headerName: '내용',
       field: 'requirement',
       cellRenderer: LobRenderer,
-      onCellDoubleClicked: onCellDoubleClickedContent,
+      cellStyle: { cursor: 'pointer' },
+      onCellDoubleClicked: onCellDoubleClicked,
     },
     {
       headerName: '요청자',
@@ -244,18 +259,18 @@ const Voc = () => {
     {
       headerName: '요청일',
       field: 'issueDate',
-      width: 124,
       cellEditor: 'agDateCellEditor',
       editable: true,
       valueFormatter: dateValueFormatter,
+      width: 124,
     },
     {
       headerName: '납기 요청일',
       field: 'requiredResponseDate',
-      width: 130,
       cellEditor: 'agDateCellEditor',
       editable: true,
       valueFormatter: dateValueFormatter,
+      width: 130,
     },
     {
       headerName: '중요도',
@@ -294,24 +309,24 @@ const Voc = () => {
         cellRenderer: RequestProgressRenderer,
         cellEditorPopup: true,
       },
-      width: 124,
       floatingFilter: true,
+      width: 124,
     },
     {
       headerName: '완료 예정일',
       field: 'expectedCompletionDate',
-      width: 140,
       cellEditor: 'agDateCellEditor',
       editable: true,
       valueFormatter: dateValueFormatter,
+      width: 140,
     },
     {
       headerName: '완료일',
       field: 'closedDate',
-      width: 124,
       cellEditor: 'agDateCellEditor',
       editable: true,
       valueFormatter: dateValueFormatter,
+      width: 124,
     },
     {
       headerName: '수정자',
@@ -321,6 +336,7 @@ const Voc = () => {
     {
       headerName: '수정일',
       field: 'updateDate',
+      valueFormatter: dateValueFormatter,
       width: 124,
     },
   ]
@@ -350,57 +366,61 @@ const Voc = () => {
         setOpen={setIsOpenContent}
         width='800px'
         height='500px'
-        title='VoC 내용'
+        title='VoC 수정'
         button={
           <IbsButton
             formControllStyle={{ marginRight: 10 }}
             width={70}
-            onClick={onClickContentSaveButton}
+            //onClick={onClickContentSaveButton}
           >
             변경
           </IbsButton>
         }
       >
-        <IbsEditor
-          width='800px'
-          height='400px'
-          content={content}
-          setContent={setContent}
-        />
+        <VocModification data={modifyData} />
       </IbsModal>
       <S.Menu>
         <S.SearchCondition>
           <IbsCombobox
             ref={refs.dateKindCombo}
             label='기간 종류'
-            width='160px'
+            width='164px'
             defaultItems={[
-              { value: 'new', displayValue: '요청일' },
-              { value: 'error', displayValue: '납기 요청일' },
+              { value: 'ISSUE_DATE', displayValue: '요청일' },
+              { value: 'REQUIRED_RESPONSE_DATE', displayValue: '납기 요청일' },
               {
-                value: 'improvement',
+                value: 'EXPECTED_COMPLETION_DATE',
                 displayValue: '완료 예정일',
               },
               {
-                value: 'improvement',
+                value: 'CLOSED_DATE',
                 displayValue: '완료일',
               },
             ]}
           />
-          <IbsDatePicker ref={refs.startDatePicker} type='date' />
+          <IbsDatePicker
+            ref={refs.startDatePicker}
+            type='date'
+            startDate={firstDayThisMonth()}
+          />
           <span>-</span>
           <IbsDatePicker ref={refs.endDatePicker} type='date' />
-          <IbsTextField label='System' />
+          <IbsCombobox
+            ref={refs.systemCombo}
+            label='System'
+            width='150px'
+            defaultItems={[{ displayValue: '', value: '' }]}
+          />
         </S.SearchCondition>
         <S.Buttons>
-          <IbsTypeButton buttontype={'search'} />
+          <IbsTypeButton buttontype={'search'} onClick={getRowData} />
           <IbsButton width={70} onClick={() => setIsRegistration(true)}>
             등록
           </IbsButton>
-          <IbsButton width={70}>저장</IbsButton>
         </S.Buttons>
       </S.Menu>
       <Aggrid
+        gridRef={refs.gridRef}
         columns={columns}
         rowData={rowData}
         gridHeight={'90%'}

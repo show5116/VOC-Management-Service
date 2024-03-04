@@ -12,6 +12,8 @@ import java.util.Optional;
 public interface AdmUserInfoRepository extends JpaRepository<AdmUserInfo , AdmUserInfoId> {
     List<AdmUserInfo> findByUserId(String userId);
 
+    List<AdmUserInfo> findByRoleId(String roleId);
+
     Optional<AdmUserInfo>  findByUserIdAndPlantAndAdmission(String userId, String plant, String admission);
 
     Optional<AdmUserInfo> findByUserIdAndPlant(String userId, String plant);

@@ -11,10 +11,18 @@ export const menus: menu[] = [
     child: [
       {
         menuDepth: 2,
+        menuName: 'VOC 관리',
+        menuPath: '/voc-management',
+        componentPath: 'voc-manage/Voc',
+        menuKey: 1001,
+        parentKey: 2,
+      },
+      {
+        menuDepth: 2,
         menuName: '요청자 DashBoard',
         menuPath: '/dashboard',
         componentPath: 'voc-manage/DashboardCustomer',
-        menuKey: 1001,
+        menuKey: 1002,
         parentKey: 2,
       },
       {
@@ -22,25 +30,17 @@ export const menus: menu[] = [
         menuName: '담당자 DashBoard',
         menuPath: '/dashboard',
         componentPath: 'voc-manage/DashboardPersonInCharge',
-        menuKey: 1002,
-        parentKey: 2,
-      },
-      {
-        menuDepth: 2,
-        menuName: 'VOC 관리',
-        menuPath: '/voc-management',
-        componentPath: 'voc-manage/Voc',
         menuKey: 1003,
         parentKey: 2,
       },
-      {
+      /*{
         menuDepth: 2,
         menuName: 'System 관리',
         menuPath: '/system-management',
         componentPath: 'voc-manage/SystemManagement',
         menuKey: 1004,
         parentKey: 2,
-      },
+      },*/
     ],
   },
   {
@@ -67,14 +67,14 @@ export const menus: menu[] = [
         menuKey: 2002,
         parentKey: 2,
       },
-      {
+      /*{
         menuDepth: 2,
         menuName: '월별 처리현황(담당자별)',
         menuPath: '/montly-processing-status/developer',
         componentPath: 'voc-report/RequirementsByMontlyDeveloper',
         menuKey: 2002,
         parentKey: 2,
-      },
+      },*/
     ],
   },
 ]
